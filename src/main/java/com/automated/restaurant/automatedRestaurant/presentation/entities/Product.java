@@ -1,10 +1,22 @@
 package com.automated.restaurant.automatedRestaurant.presentation.entities;
 
 import jakarta.persistence.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
+@Getter
+@Setter
+@SQLDelete(sql = "UPDATE product SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class Product extends BaseEntity {
 
     @Column(nullable = false)
