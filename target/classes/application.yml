@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: goldencashbunny-backend
+    name: automated-restaurant-backend
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -15,4 +15,4 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
