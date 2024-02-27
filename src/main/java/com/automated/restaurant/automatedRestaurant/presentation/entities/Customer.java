@@ -41,5 +41,5 @@ public class Customer extends BaseEntity{
     private Long commandIdentifier;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
-    private List<SalesOrder> salesOrders;
+    private List<CustomerOrder> customerOrders;
 }

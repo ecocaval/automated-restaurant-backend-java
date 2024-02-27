@@ -15,8 +15,7 @@ import org.hibernate.annotations.SQLRestriction;
 @SuperBuilder
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE job_title SET deleted = true WHERE id = ?")
-@SQLRestriction("deleted = false")
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "restaurant_id"})})
 public class JobTitle extends BaseEntity{
 
     @Column(nullable = false)

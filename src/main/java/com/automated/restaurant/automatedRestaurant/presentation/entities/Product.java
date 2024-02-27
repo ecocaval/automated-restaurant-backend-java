@@ -29,7 +29,7 @@ public class Product extends BaseEntity {
     private String description;
 
     @Column(nullable = false)
-    private Double value;
+    private Double price;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)

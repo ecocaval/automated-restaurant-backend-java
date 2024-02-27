@@ -28,5 +28,5 @@ public class ProductInfo extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "sales_order_id", nullable = false)
-    private SalesOrder salesOrder;
+    private CustomerOrder customerOrder;
 }
