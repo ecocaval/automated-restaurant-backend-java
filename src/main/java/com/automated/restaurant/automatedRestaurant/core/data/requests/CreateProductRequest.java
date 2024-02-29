@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CreateRestaurantProductRequest {
+public class CreateProductRequest {
 
     @NotNull
     private String name;

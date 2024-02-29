@@ -1,5 +1,6 @@
 package com.automated.restaurant.automatedRestaurant.presentation.entities;
 
+import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateProductRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -22,8 +25,8 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column
-    private String imageUrl;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    private List<ProductImage> iamges;
 
     @Column(nullable = false)
     private String description;
@@ -34,4 +37,13 @@ public class Product extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    public static Product fromCreateRequest(CreateProductRequest request, Restaurant restaurant) {
+        return Product.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .price(request.getPrice())
+                .restaurant(restaurant)
+                .build();
+    }
 }

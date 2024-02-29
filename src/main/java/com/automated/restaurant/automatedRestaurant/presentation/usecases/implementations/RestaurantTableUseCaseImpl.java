@@ -1,11 +1,14 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
+import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateProductRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateRestaurantTableRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.OnTableUpdateRequest;
+import com.automated.restaurant.automatedRestaurant.presentation.entities.Product;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantTable;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.RestaurantTableConflictException;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.RestaurantTableNotFoundException;
+import com.automated.restaurant.automatedRestaurant.presentation.repositories.ProductRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantTableRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.RestaurantTableUseCase;
 import jakarta.transaction.Transactional;
@@ -21,6 +24,9 @@ public class RestaurantTableUseCaseImpl implements RestaurantTableUseCase {
 
     @Autowired
     private RestaurantTableRepository restaurantTableRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public List<RestaurantTable> findAll() {
@@ -50,6 +56,19 @@ public class RestaurantTableUseCaseImpl implements RestaurantTableUseCase {
         }
 
         return tables;
+    }
+
+    @Override
+    public List<Product> createAllProducts(Restaurant restaurant, List<CreateProductRequest> requests) {
+        List<Product> products = new ArrayList<>();
+
+        for (CreateProductRequest request : requests) {
+            products.add(
+                this.productRepository.save(Product.fromCreateRequest(request, restaurant))
+            );
+        }
+
+        return products;
     }
 
     @Override

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ public class ProductResponse {
 
     private String name;
 
-    private String imageUrl;
+//    private List<String> images;
 
     private String description;
 
@@ -33,7 +34,6 @@ public class ProductResponse {
                 .id(product.getId())
                 .restaurantId(product.getRestaurant().getId())
                 .name(product.getName())
-                .imageUrl(product.getImageUrl())
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .build();

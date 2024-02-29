@@ -36,24 +36,15 @@ public class Restaurant extends BaseEntity {
     private List<Admin> admins;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
+    private List<RestaurantImage> images;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
     private List<RestaurantTable> tables;
 
     public static Restaurant fromCreateRequest(CreateRestaurantRequest request) {
 
-        var restaurant = Restaurant.builder()
+        return Restaurant.builder()
                 .name(request.getName())
-                .jobTitles(request.getJobTitles() != null ? new ArrayList<>() : null)
-                .tables(request.getTables() != null ? new ArrayList<>() : null)
                 .build();
-
-        request.getJobTitles().forEach(jobTitleRequest -> {
-            restaurant.getJobTitles().add(new JobTitle(jobTitleRequest.getName(), restaurant));
-        });
-
-        request.getTables().forEach(tableRequest -> {
-            restaurant.getTables().add(RestaurantTable.fromCreateRequest(tableRequest, restaurant));
-        });
-
-        return restaurant;
     }
 }

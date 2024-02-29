@@ -14,8 +14,4 @@ public class CreateRestaurantRequest {
 
     @NotNull
     private String name;
-
-    private List<CreateRestaurantJobTitleRequest> jobTitles;
-
-    private List<CreateRestaurantTableRequest> tables;
 }
