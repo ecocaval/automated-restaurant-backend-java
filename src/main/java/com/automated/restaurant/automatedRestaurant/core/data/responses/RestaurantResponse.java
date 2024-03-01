@@ -23,9 +23,9 @@ public class RestaurantResponse {
 
     private List<JobTitleResponse> jobTitles;
 
-    private List<AdminResponse> admins;
+    private List<CollaboratorResponse> collaborators;
 
-    private List<RestaurantTableResponse> tables;
+    private List<TableResponse> tables;
 
     public static RestaurantResponse fromRestaurant(Restaurant restaurant) {
         return RestaurantResponse.builder()
@@ -33,8 +33,8 @@ public class RestaurantResponse {
                 .name(restaurant.getName())
                 .products(restaurant.getProducts() != null ? restaurant.getProducts().stream().map(ProductResponse::fromProduct).toList() : null)
                 .jobTitles(restaurant.getJobTitles() != null ? restaurant.getJobTitles().stream().map(JobTitleResponse::fromJobTitle).toList() : null)
-                .admins(restaurant.getAdmins() != null ? restaurant.getAdmins().stream().map(AdminResponse::fromAdmin).toList() : null)
-                .tables(restaurant.getTables() != null ? restaurant.getTables().stream().map(RestaurantTableResponse::fromRestaurantTable).toList() : null)
+                .collaborators(restaurant.getCollaborators() != null ? restaurant.getCollaborators().stream().map(CollaboratorResponse::fromCollaborator).toList() : null)
+                .tables(restaurant.getRestaurantTables() != null ? restaurant.getRestaurantTables().stream().map(TableResponse::fromRestaurantTable).toList() : null)
                 .build();
     }
 }

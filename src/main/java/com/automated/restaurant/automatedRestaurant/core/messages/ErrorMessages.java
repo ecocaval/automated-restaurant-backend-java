@@ -18,6 +18,7 @@ public enum ErrorMessages {
     ERROR_DUPLICATED_RESTAURANT_TABLE("O identificador da mesa do restaurante deve ser único."),
     ERROR_RESTAURANT_TABLE_NOT_FOUND_BY_ID("A mesa do restaurante com este id não foi encontrada."),
     ERROR_RESTAURANT_PRODUCT_NOT_FOUND_BY_ID("O produto do restaurante com este id não foi encontrada."),
+    ERROR_RESTAURANT_JOB_TITLE_NOT_FOUND_BY_ID("O cargo do restaurante com este id não foi encontrada."),
     ERROR_RESTAURANT_TABLE_CONFLICT_BY_IDENTIFICATION("A mesa do restaurante com este identificador já existe."),
     ERROR_ADDRESS_NOT_FOUND_FOR_ZIP_CODE("Não encontramos um endereço para o cep fornecido, verifique o valor e tente novamente."),
     ERROR_EMAIL_OUT_OF_PATTERN("Por favor, insira um e-mail válido.");

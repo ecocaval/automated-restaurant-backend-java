@@ -26,8 +26,8 @@ public class CustomerOrder extends BaseEntity {
     private Customer customer;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerOrder")
-    private List<ProductInfo> productInfos;
+    private List<ProductOrderInfo> productOrderInfos;
 
     @OneToOne
-    private RestaurantTable table;
+    private RestaurantTable restaurantTable;
 }

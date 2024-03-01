@@ -1,12 +1,10 @@
 package com.automated.restaurant.automatedRestaurant.presentation.entities;
 
 import com.automated.restaurant.automatedRestaurant.core.data.enums.TableStatus;
-import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateRestaurantTableRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateTableRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @AllArgsConstructor
@@ -14,7 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 @SuperBuilder
 @Getter
 @Setter
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"identification", "restaurant_id"})})
+@jakarta.persistence.Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"identification", "restaurant_id"})})
 public class RestaurantTable extends BaseEntity {
 
     @Column(nullable = false)
@@ -51,7 +49,7 @@ public class RestaurantTable extends BaseEntity {
         this.status = newStatus;
     }
 
-    public static RestaurantTable fromCreateRequest(CreateRestaurantTableRequest request, Restaurant restaurant) {
+    public static RestaurantTable fromCreateRequest(CreateTableRequest request, Restaurant restaurant) {
         return RestaurantTable.builder()
                 .identification(request.getIdentification())
                 .capacity(request.getCapacity())

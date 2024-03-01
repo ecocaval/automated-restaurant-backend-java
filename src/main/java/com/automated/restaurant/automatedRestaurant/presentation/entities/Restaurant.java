@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,13 +32,13 @@ public class Restaurant extends BaseEntity {
     private List<JobTitle> jobTitles;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
-    private List<Admin> admins;
+    private List<Collaborator> collaborators;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
     private List<RestaurantImage> images;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
-    private List<RestaurantTable> tables;
+    private List<RestaurantTable> restaurantTables;
 
     public static Restaurant fromCreateRequest(CreateRestaurantRequest request) {
 

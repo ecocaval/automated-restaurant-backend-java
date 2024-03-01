@@ -1,6 +1,5 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
-import com.automated.restaurant.automatedRestaurant.core.data.enums.FileTypes;
 import com.automated.restaurant.automatedRestaurant.core.utils.ImageUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Product;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.ProductImage;
