@@ -6,12 +6,12 @@ spring:
     name: automated-restaurant-backend
   datasource:
     driverClassName: org.postgresql.Driver
-#    url: jdbc:postgresql://localhost:5432/postgres
-#    username: postgres
-#    password: 123
-    url: jdbc:postgresql://golden-cash-bunny-db.c1k8ckseaan4.us-east-2.rds.amazonaws.com:5432/initial_db
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: eridogisthemaster
+    password: 123
+#    url: jdbc:postgresql://golden-cash-bunny-db.c1k8ckseaan4.us-east-2.rds.amazonaws.com:5432/initial_db
+#    username: postgres
+#    password: eridogisthemaster
   jpa:
     show-sql: false
     hibernate:

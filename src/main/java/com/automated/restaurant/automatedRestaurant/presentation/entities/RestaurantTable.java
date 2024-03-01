@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,6 +31,9 @@ public class RestaurantTable extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantTable")
+    private List<Bill> bills;
 
     public RestaurantTable(String identification, Long capacity, Restaurant restaurant) {
         this.identification = identification;

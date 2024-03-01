@@ -35,6 +35,9 @@ public class Restaurant extends BaseEntity {
     private List<Collaborator> collaborators;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
+    private List<Customer> customers;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
     private List<RestaurantImage> images;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")

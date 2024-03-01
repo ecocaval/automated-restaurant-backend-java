@@ -5,12 +5,12 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = PhoneValidator.class)
+@Constraint(validatedBy = CellPhoneValidator.class)
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Phone {
+public @interface CellPhone {
 
-    String message() default "O telefone só pode conter 8 dígitos numéricos.";
+    String message() default "O celular só pode conter 9 dígitos numéricos.";
 
     Class<?>[] groups() default {};
 

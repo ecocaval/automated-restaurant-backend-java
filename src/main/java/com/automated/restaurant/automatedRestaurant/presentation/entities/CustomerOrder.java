@@ -25,8 +25,12 @@ public class CustomerOrder extends BaseEntity {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @ManyToOne
+    @JoinColumn(name = "bill_id", nullable = false)
+    private Bill bill;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerOrder")
-    private List<ProductOrderInfo> productOrderInfos;
+    private List<ProductOrderInfo> productOrderInfo;
 
     @OneToOne
     private RestaurantTable restaurantTable;

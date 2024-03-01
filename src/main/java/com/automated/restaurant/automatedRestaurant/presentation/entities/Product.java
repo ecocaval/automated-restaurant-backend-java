@@ -25,6 +25,9 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private Long peopleCount;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
     private List<ProductImage> iamges;
 

@@ -1,5 +1,6 @@
 package com.automated.restaurant.automatedRestaurant.presentation.entities;
 
+import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateCustomerRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,18 +29,26 @@ public class Customer extends BaseEntity{
     @Column(nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
-    private UUID token;
-
     @Column(length = 2, nullable = false)
     private String cellPhoneAreaCode;
 
     @Column(length = 9, nullable = false)
     private String cellPhone;
 
-    @Column(nullable = false)
-    private Long commandIdentifier;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private List<CustomerOrder> customerOrders;
+
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    public static Customer fromCreateRequest(CreateCustomerRequest request, Restaurant restaurant) {
+        return Customer.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .cellPhoneAreaCode(request.getCellPhoneAreaCode())
+                .cellPhone(request.getCellPhone())
+                .restaurant(restaurant)
+                .build();
+    }
 }
