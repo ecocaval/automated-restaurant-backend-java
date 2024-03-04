@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OnTableUpdateRequest {
+public class TableStatusUpdateRequest {
 
     @NotNull
     private UUID id;

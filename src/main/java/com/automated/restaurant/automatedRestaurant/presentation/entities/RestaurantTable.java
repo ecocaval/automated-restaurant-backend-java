@@ -8,13 +8,14 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @Getter
 @Setter
-@jakarta.persistence.Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"identification", "restaurant_id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"identification", "restaurant_id"})})
 public class RestaurantTable extends BaseEntity {
 
     @Column(nullable = false)
@@ -44,12 +45,13 @@ public class RestaurantTable extends BaseEntity {
 
     public RestaurantTable(RestaurantTable oldRestaurantTable, TableStatus newStatus) {
         super(
-            oldRestaurantTable.getId(),
-            oldRestaurantTable.getCreationDate(),
-            oldRestaurantTable.getLastModifiedDate(),
-            oldRestaurantTable.isDeleted()
+                oldRestaurantTable.getId(),
+                oldRestaurantTable.getCreationDate(),
+                oldRestaurantTable.getLastModifiedDate(),
+                oldRestaurantTable.isDeleted()
         );
         this.identification = oldRestaurantTable.getIdentification();
+        this.capacity = oldRestaurantTable.getCapacity();
         this.restaurant = oldRestaurantTable.getRestaurant();
         this.status = newStatus;
     }

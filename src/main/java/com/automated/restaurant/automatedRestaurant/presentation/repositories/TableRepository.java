@@ -16,4 +16,5 @@ public interface TableRepository extends JpaRepository<RestaurantTable, UUID> {
     List<RestaurantTable> findByIdIn(Collection<UUID> tableIds);
 
     Boolean existsByRestaurantIdAndIdentification(UUID restaurantId, String identification);
-}
+
+    Boolean existsByRestaurantIdAndIdentificationAndIdNotIn(UUID restaurantId, String identification, List<UUID> tableIds);}

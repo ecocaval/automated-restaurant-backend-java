@@ -1,7 +1,7 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateTableRequest;
-import com.automated.restaurant.automatedRestaurant.core.data.requests.OnTableUpdateRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.TableStatusUpdateRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateTableRequest;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantTable;
@@ -46,7 +46,7 @@ public class TableUseCaseImpl implements TableUseCase {
         List<RestaurantTable> restaurantTables = new ArrayList<>();
 
         for (CreateTableRequest request : requests) {
-            validateDuplicityOnTableIdentification(restaurant.getId(), request.getIdentification());
+            validateDuplicityOnTableIdentificationOnCreation(restaurant.getId(), request.getIdentification());
             restaurantTables.add(
                     this.tableRepository.saveAndFlush(RestaurantTable.fromCreateRequest(request, restaurant))
             );
@@ -64,7 +64,7 @@ public class TableUseCaseImpl implements TableUseCase {
 
                 if (restaurantTable.getId().equals(request.getId())) {
                     Optional.ofNullable(request.getIdentification()).ifPresent(identification -> {
-                        validateDuplicityOnTableIdentification(restaurant.getId(), request.getIdentification());
+                        validateDuplicityOnTableIdentificationOnUpdate(restaurant.getId(), request.getIdentification(), request.getId());
                         restaurantTable.setIdentification(identification);
                     });
                     Optional.ofNullable(request.getCapacity()).ifPresent(restaurantTable::setCapacity);
@@ -77,8 +77,8 @@ public class TableUseCaseImpl implements TableUseCase {
     }
 
     @Override
-    public void updateStatus(RestaurantTable oldRestaurantTable, OnTableUpdateRequest request) {
-        this.tableRepository.saveAndFlush(
+    public RestaurantTable updateStatus(RestaurantTable oldRestaurantTable, TableStatusUpdateRequest request) {
+        return this.tableRepository.saveAndFlush(
                 new RestaurantTable(oldRestaurantTable, request.getStatus())
         );
     }
@@ -90,8 +90,14 @@ public class TableUseCaseImpl implements TableUseCase {
         );
     }
 
-    private void validateDuplicityOnTableIdentification(UUID restaurantId, String identification) {
+    private void validateDuplicityOnTableIdentificationOnCreation(UUID restaurantId, String identification) {
         if (this.tableRepository.existsByRestaurantIdAndIdentification(restaurantId, identification)) {
+            throw new TableConflictException(identification);
+        }
+    }
+
+    private void validateDuplicityOnTableIdentificationOnUpdate(UUID restaurantId, String identification, UUID tableId) {
+        if (this.tableRepository.existsByRestaurantIdAndIdentificationAndIdNotIn(restaurantId, identification, List.of(tableId))) {
             throw new TableConflictException(identification);
         }
     }

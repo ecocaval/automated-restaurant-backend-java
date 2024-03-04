@@ -1,14 +1,18 @@
 package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 
-import com.automated.restaurant.automatedRestaurant.core.data.requests.OnTableUpdateRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.TableStatusUpdateRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.TableResponse;
+import com.automated.restaurant.automatedRestaurant.core.utils.WebSocketUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantTable;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.TableUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class RestaurantTableTopicController {
@@ -16,14 +20,25 @@ public class RestaurantTableTopicController {
     @Autowired
     private TableUseCase tableUseCase;
 
-    @MessageMapping("/on-table-update")
-    @SendTo("/restaurant-table-topic/update")
-    public List<RestaurantTable> updateTable(OnTableUpdateRequest request) {
+    @Autowired
+    private SimpMessagingTemplate template;
 
-        var table = this.tableUseCase.findById(request.getId());
+    @MessageMapping("restaurant/{restaurantId}/table/update-status")
+    public void updateTable(
+            SimpMessageHeaderAccessor headerAccessor,
+            @Payload TableStatusUpdateRequest request
+    ) {
+        UUID restaurantId = WebSocketUtils.getIdSectionFromUrl(headerAccessor, 3);
 
-        this.tableUseCase.updateStatus(table, request);
+        RestaurantTable updatedTable = this.tableUseCase.updateStatus(
+                this.tableUseCase.findById(request.getId()),
+                request
+        );
 
-        return this.tableUseCase.findAll();
+        this.template.convertAndSend(
+                String.format("/topic/restaurant/%s/table", restaurantId),
+                TableResponse.fromRestaurantTable(updatedTable)
+        );
     }
 }
+
