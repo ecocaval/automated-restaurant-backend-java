@@ -9,6 +9,7 @@
 /home/ecocaval/automated-restaurant/automated-restaurant-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/exceptions/CustomerNotFoundException.java
 /home/ecocaval/automated-restaurant/automated-restaurant-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/repositories/ProductImageRepository.java
 /home/ecocaval/automated-restaurant/automated-restaurant-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/entities/Restaurant.java
+/home/ecocaval/automated-restaurant/automated-restaurant-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/exceptions/ProductConflictException.java
 /home/ecocaval/automated-restaurant/automated-restaurant-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/repositories/AdminRepository.java
 /home/ecocaval/automated-restaurant/automated-restaurant-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/controllers/CustomerController.java
 /home/ecocaval/automated-restaurant/automated-restaurant-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/repositories/AddressRepository.java
