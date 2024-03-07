@@ -17,6 +17,8 @@ public class TableResponse {
 
     private UUID id;
 
+    private boolean active;
+
     private UUID restaurantId;
 
     private String identification;
@@ -28,6 +30,7 @@ public class TableResponse {
     public static TableResponse fromRestaurantTable(RestaurantTable restaurantTable) {
         return TableResponse.builder()
                 .id(restaurantTable.getId())
+                .active(restaurantTable.isActive())
                 .restaurantId(restaurantTable.getRestaurant().getId())
                 .identification(restaurantTable.getIdentification())
                 .capacity(restaurantTable.getCapacity())

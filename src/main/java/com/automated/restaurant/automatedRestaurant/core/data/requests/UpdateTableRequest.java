@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -12,7 +13,10 @@ import java.util.UUID;
 @Data
 public class UpdateTableRequest {
 
+    @NotNull(message = "O id da mesa a ser atualizada não pode ser nulo.")
     private UUID id;
+
+    private Boolean active;
 
     private String identification;
 
