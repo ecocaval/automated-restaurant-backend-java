@@ -12,4 +12,8 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     List<Product> findByIdIn(Collection<UUID> productIds);
+
+    boolean existsByRestaurantIdAndNameAndSkuAndServingCapacityAndIdNotIn(
+            UUID restaurantId, String name, Long sku, Long servingCapacity, List<UUID> id
+    );
 }

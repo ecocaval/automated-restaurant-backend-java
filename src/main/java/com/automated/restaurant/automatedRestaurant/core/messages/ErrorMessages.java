@@ -21,6 +21,7 @@ public enum ErrorMessages {
     ERROR_RESTAURANT_PRODUCT_NOT_FOUND_BY_ID("O produto do restaurante com este id não foi encontrada."),
     ERROR_RESTAURANT_JOB_TITLE_NOT_FOUND_BY_ID("O cargo do restaurante com este id não foi encontrada."),
     ERROR_RESTAURANT_TABLE_CONFLICT_BY_IDENTIFICATION("A mesa do restaurante com este identificador já existe."),
+    ERROR_RESTAURANT_PRODUCT_CONFLICT("O produto do restaurante com este nome, sku e tamanho de porção já existe."),
     ERROR_CUSTOMER_CONFLICT_BY_EMAIL("O cliente com este email já existe."),
     ERROR_ADDRESS_NOT_FOUND_FOR_ZIP_CODE("Não encontramos um endereço para o cep fornecido, verifique o valor e tente novamente."),
     ERROR_EMAIL_OUT_OF_PATTERN("Por favor, insira um e-mail válido.");

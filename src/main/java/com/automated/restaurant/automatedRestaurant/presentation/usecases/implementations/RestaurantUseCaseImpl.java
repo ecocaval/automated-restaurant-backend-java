@@ -28,7 +28,7 @@ public class RestaurantUseCaseImpl implements RestaurantUseCase {
     @Override
     public Restaurant findById(UUID id) {
         return this.restaurantRepository.findById(id)
-                .orElseThrow(() -> new  RestaurantNotFoundException(id));
+                .orElseThrow(() -> new RestaurantNotFoundException(id));
     }
 
     @Override

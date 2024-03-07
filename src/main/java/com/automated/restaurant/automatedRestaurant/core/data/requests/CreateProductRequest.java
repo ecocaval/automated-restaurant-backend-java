@@ -19,4 +19,8 @@ public class CreateProductRequest {
 
     @NotNull
     private Double price;
+
+    private Long servingCapacity;
+
+    private Long sku;
 }

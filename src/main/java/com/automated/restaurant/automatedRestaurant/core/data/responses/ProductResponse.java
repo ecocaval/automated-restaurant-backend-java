@@ -16,9 +16,15 @@ public class ProductResponse {
 
     private UUID id;
 
+    private boolean active;
+
     private UUID restaurantId;
 
     private String name;
+
+    private Long servingCapacity;
+
+    private Long sku;
 
 //    private List<String> images;
 
@@ -29,8 +35,11 @@ public class ProductResponse {
     public static ProductResponse fromProduct(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
+                .active(product.isActive())
                 .restaurantId(product.getRestaurant().getId())
                 .name(product.getName())
+                .servingCapacity(product.getServingCapacity())
+                .sku(product.getSku())
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .build();

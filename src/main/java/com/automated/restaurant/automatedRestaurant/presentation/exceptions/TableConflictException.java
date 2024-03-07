@@ -1,11 +1,12 @@
 package com.automated.restaurant.automatedRestaurant.presentation.exceptions;
 
 import com.automated.restaurant.automatedRestaurant.core.messages.ErrorMessages;
+import com.automated.restaurant.automatedRestaurant.presentation.exceptions.base.ConflictException;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.base.NotFoundException;
 
 import java.util.Map;
 
-public class TableConflictException extends NotFoundException {
+public class TableConflictException extends ConflictException {
 
     public TableConflictException(String identification) {
         super(
