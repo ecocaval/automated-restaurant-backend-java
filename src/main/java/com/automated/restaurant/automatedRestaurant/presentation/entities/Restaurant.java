@@ -39,7 +39,7 @@ public class Restaurant extends BaseEntity {
     private List<Customer> customers;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
-    private List<RestaurantImage> images;
+    private List<FileEntity> images;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
     private List<RestaurantTable> restaurantTables;

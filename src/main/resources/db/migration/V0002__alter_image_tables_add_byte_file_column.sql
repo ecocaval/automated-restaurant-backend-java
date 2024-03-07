@@ -1,0 +1,3 @@
+ALTER TABLE product_image ADD COLUMN IF NOT EXISTS image_data BYTEA NOT NULL;
+
+ALTER TABLE restaurant_image ADD COLUMN IF NOT EXISTS image_data BYTEA NOT NULL;

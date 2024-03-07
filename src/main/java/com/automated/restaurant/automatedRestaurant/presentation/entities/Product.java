@@ -29,7 +29,7 @@ public class Product extends BaseEntity {
     private Long peopleCount;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
-    private List<ProductImage> iamges;
+    private List<FileEntity> images;
 
     @Column(nullable = false)
     private String description;

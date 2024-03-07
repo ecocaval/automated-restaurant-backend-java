@@ -5,11 +5,15 @@ import com.automated.restaurant.automatedRestaurant.core.data.responses.JobTitle
 import com.automated.restaurant.automatedRestaurant.core.data.responses.ProductResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.RestaurantResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.TableResponse;
+import com.automated.restaurant.automatedRestaurant.core.utils.ImageUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantImage;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -196,6 +200,17 @@ public class RestaurantController {
         this.productUseCase.deleteAll(productIds);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/product//image/{imageId}")
+    public ResponseEntity<ByteArrayResource> getProductImage(
+            @PathVariable("imageId") UUID imageId
+    ) {
+        var imageFile = this.imageStoreUseCase.downloadProductImage(imageId);
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(imageFile.getType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "fileName=" + imageFile.getName())
+                .body(new ByteArrayResource(ImageUtils.decompressImage(imageFile.getImageData())));
     }
 
     @PostMapping("/product/{productId}/image")

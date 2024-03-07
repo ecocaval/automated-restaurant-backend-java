@@ -1,13 +1,10 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
 import com.automated.restaurant.automatedRestaurant.core.utils.ImageUtils;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.Product;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.ProductImage;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantImage;
+import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.ImageNotFoundException;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.ImageStoringException;
-import com.automated.restaurant.automatedRestaurant.presentation.repositories.ProductImageRepository;
+import com.automated.restaurant.automatedRestaurant.presentation.repositories.FileRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantImageRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.ImageStoreUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +21,18 @@ public class ImageStoreUseCaseImpl implements ImageStoreUseCase {
     private RestaurantImageRepository restaurantImageRepository;
 
     @Autowired
-    private ProductImageRepository productImageRepository;
+    private FileRepository fileRepository;
 
     @Override
-    public RestaurantImage uploadRestaurantImage(MultipartFile file, Restaurant restaurant) {
+    public FileEntity uploadRestaurantImage(MultipartFile file, Restaurant restaurant) {
         try {
             ImageUtils.validateImageType(file.getContentType());
 
             return restaurantImageRepository.save(
-                    RestaurantImage.builder()
+                    FileEntity.builder()
                             .name(file.getOriginalFilename())
                             .type(file.getContentType())
-                            .imageData(ImageUtils.compressImage(file.getBytes()))
-                            .restaurant(restaurant)
+                            .imageData(file.getBytes()))
                             .build()
             );
         } catch (IOException ex) {
@@ -49,8 +45,8 @@ public class ImageStoreUseCaseImpl implements ImageStoreUseCase {
         try {
             ImageUtils.validateImageType(file.getContentType());
 
-            productImageRepository.save(
-                    ProductImage.builder()
+            fileRepository.save(
+                    ProductFile.builder()
                             .name(file.getOriginalFilename())
                             .type(file.getContentType())
                             .imageData(ImageUtils.compressImage(file.getBytes()))
@@ -72,11 +68,8 @@ public class ImageStoreUseCaseImpl implements ImageStoreUseCase {
     }
 
     @Override
-    public byte[] downloadProductImage(UUID id) {
-        return ImageUtils.decompressImage(
-                this.productImageRepository.findById(id)
-                        .orElseThrow(() -> new ImageNotFoundException(id))
-                        .getImageData()
-        );
+    public ProductFile downloadProductImage(UUID id) {
+        return this.fileRepository.findById(id)
+                .orElseThrow(() -> new ImageNotFoundException(id));
     }
 }

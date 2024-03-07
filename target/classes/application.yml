@@ -2,6 +2,10 @@ server:
   port: 8080
 
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
   application:
     name: automated-restaurant-backend
   datasource:
@@ -15,7 +19,7 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
 
 feign:
   okhttp:
