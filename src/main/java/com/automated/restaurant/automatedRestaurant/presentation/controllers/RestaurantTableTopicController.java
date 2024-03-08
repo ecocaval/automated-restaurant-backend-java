@@ -28,6 +28,8 @@ public class RestaurantTableTopicController {
             SimpMessageHeaderAccessor headerAccessor,
             @Payload TableStatusUpdateRequest request
     ) {
+        System.out.println("Received message with id " + request.getId());
+
         UUID restaurantId = WebSocketUtils.getIdSectionFromUrl(headerAccessor, 3);
 
         RestaurantTable updatedTable = this.tableUseCase.updateStatus(
@@ -36,7 +38,7 @@ public class RestaurantTableTopicController {
         );
 
         this.template.convertAndSend(
-                String.format("/topic/restaurant/%s/table", restaurantId),
+                String.format("/app/restaurant/%s/table/update-status", restaurantId),
                 TableResponse.fromRestaurantTable(updatedTable)
         );
     }
