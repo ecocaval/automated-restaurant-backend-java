@@ -38,7 +38,7 @@ public class RestaurantTableTopicController {
         );
 
         this.template.convertAndSend(
-                String.format("/app/restaurant/%s/table/update-status", restaurantId),
+                String.format("/topic/restaurant/%s/table", restaurantId),
                 TableResponse.fromRestaurantTable(updatedTable)
         );
     }
