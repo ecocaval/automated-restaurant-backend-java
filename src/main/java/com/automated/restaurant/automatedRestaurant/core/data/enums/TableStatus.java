@@ -5,6 +5,5 @@ import lombok.Getter;
 @Getter
 public enum TableStatus {
 
-    AVAILABLE, OCCUPIED
-
+    AVAILABLE, FINALIZING, OCCUPIED
 }

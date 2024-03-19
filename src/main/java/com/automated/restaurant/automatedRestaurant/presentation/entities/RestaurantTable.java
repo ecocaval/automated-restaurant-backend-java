@@ -33,12 +33,12 @@ public class RestaurantTable extends BaseEntity {
     @Builder.Default
     private TableStatus status = TableStatus.AVAILABLE;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantTable")
+    private List<Bill> bills;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantTable")
-    private List<Bill> bills;
 
     public RestaurantTable(String identification, Long capacity, Restaurant restaurant) {
         this.identification = identification;

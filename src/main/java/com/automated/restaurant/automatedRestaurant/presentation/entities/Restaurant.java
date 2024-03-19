@@ -26,6 +26,9 @@ public class Restaurant extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private RestaurantQueue restaurantQueue;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
     private List<Product> products;
 
@@ -35,7 +38,7 @@ public class Restaurant extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
     private List<Collaborator> collaborators;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "restaurants")
     private List<Customer> customers;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurant")
@@ -46,8 +49,12 @@ public class Restaurant extends BaseEntity {
 
     public static Restaurant fromCreateRequest(CreateRestaurantRequest request) {
 
-        return Restaurant.builder()
+        var restaurant =  Restaurant.builder()
                 .name(request.getName())
                 .build();
+
+        restaurant.setRestaurantQueue(new RestaurantQueue(restaurant));
+
+        return restaurant;
     }
 }

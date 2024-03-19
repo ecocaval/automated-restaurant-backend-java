@@ -3,6 +3,7 @@ package com.automated.restaurant.automatedRestaurant.core.data.responses;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.BaseEntity;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Customer;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.CustomerOrder;
+import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +30,7 @@ public class CustomerResponse {
 
     private List<UUID> customerOrderIds;
 
-    private RestaurantResponse restaurant;
+    private List<UUID> restaurantIds;
 
     public static CustomerResponse fromCustomer(Customer customer) {
         return CustomerResponse.builder()
@@ -38,8 +39,8 @@ public class CustomerResponse {
                 .email(customer.getEmail())
                 .cellPhoneAreaCode(customer.getCellPhoneAreaCode())
                 .cellPhone(customer.getCellPhone())
-                .customerOrderIds(customer.getCustomerOrders().stream().map(BaseEntity::getId).toList())
-                .restaurant(RestaurantResponse.fromRestaurant(customer.getRestaurant()))
+                .customerOrderIds(customer.getCustomerOrders() != null ? customer.getCustomerOrders().stream().map(BaseEntity::getId).toList() : null)
+                .restaurantIds(customer.getRestaurants() != null ? customer.getRestaurants().stream().map(Restaurant::getId).toList() : null)
                 .build();
     }
 }

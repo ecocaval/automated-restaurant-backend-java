@@ -38,9 +38,19 @@ public class Customer extends BaseEntity{
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private List<CustomerOrder> customerOrders;
 
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "restaurant_customer",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "restaurant_id"))
+    private List<Restaurant> restaurants;
+
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "customers")
+    private List<Bill> bills;
+
     @ManyToOne
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
+    @JoinColumn(name = "restaurant_queue_id")
+    private RestaurantQueue restaurantQueue;
 
     public static Customer fromCreateRequest(CreateCustomerRequest request, Restaurant restaurant) {
         return Customer.builder()
@@ -48,7 +58,8 @@ public class Customer extends BaseEntity{
                 .email(request.getEmail())
                 .cellPhoneAreaCode(request.getCellPhoneAreaCode())
                 .cellPhone(request.getCellPhone())
-                .restaurant(restaurant)
+                .restaurants(List.of(restaurant))
+                .restaurantQueue(restaurant.getRestaurantQueue())
                 .build();
     }
 }

@@ -31,7 +31,4 @@ public class CustomerOrder extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerOrder")
     private List<ProductOrderInfo> productOrderInfo;
-
-    @OneToOne
-    private RestaurantTable restaurantTable;
 }

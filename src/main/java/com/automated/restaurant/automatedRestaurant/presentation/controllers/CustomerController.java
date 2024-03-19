@@ -2,9 +2,12 @@ package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateCustomerRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerResponse;
+import com.automated.restaurant.automatedRestaurant.presentation.usecases.BillUseCase;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.CustomerUseCase;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.RestaurantUseCase;
+import com.automated.restaurant.automatedRestaurant.presentation.usecases.TableUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,12 @@ public class CustomerController {
 
     @Autowired
     private CustomerUseCase customerUseCase;
+
+    @Autowired
+    private TableUseCase tableUseCase;
+
+    @Autowired
+    private BillUseCase billUseCase;
 
     @GetMapping("/{customerId}")
     private ResponseEntity<CustomerResponse> findById(

@@ -11,6 +11,7 @@ import com.automated.restaurant.automatedRestaurant.presentation.usecases.Custom
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,16 +29,33 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
 
     @Override
     public Customer create(CreateCustomerRequest request, Restaurant restaurant) {
-        validateDuplicityOnEmail(request.getEmail(), restaurant.getId());
 
-        return this.customerRepository.save(
-                Customer.fromCreateRequest(request, restaurant)
+        var optionalAlreadyExistingCustomer = this.customerRepository.findByEmailAndCellPhoneAreaCodeAndCellPhone(
+                request.getEmail(), request.getCellPhoneAreaCode(), request.getCellPhone()
         );
+
+        if(optionalAlreadyExistingCustomer.isEmpty()) {
+            return this.customerRepository.save(Customer.fromCreateRequest(request, restaurant));
+        }
+
+        /* FIXME: should send SMS to confirm if it is the real person, otherwise sensitive
+            data like bills or so will be extremely accessible. */
+
+        var customer = optionalAlreadyExistingCustomer.get();
+
+        customer.setRestaurantQueue(restaurant.getRestaurantQueue());
+
+        if (!customer.getRestaurants().contains(restaurant)) {
+            customer.getRestaurants().add(restaurant);
+        }
+
+        return this.customerRepository.save(customer);
     }
 
     @Override
     public Customer update(UpdateCustomerRequest request, Customer customer) {
-        validateDuplicityOnEmail(request.getEmail(), customer.getRestaurant().getId());
+
+        /* FIXME: should confirm if the customer built in here is not identical to another existent one. */
 
         Optional.ofNullable(request.getName()).ifPresent(customer::setName);
         Optional.ofNullable(request.getEmail()).ifPresent(customer::setEmail);
@@ -45,12 +63,5 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
         Optional.ofNullable(request.getCellPhone()).ifPresent(customer::setCellPhone);
 
         return this.customerRepository.save(customer);
-    }
-
-    private void validateDuplicityOnEmail(String email, UUID restaurantId) {
-        if (email == null || email.isEmpty() || email.isBlank()) return;
-        if (this.customerRepository.existsByEmailAndRestaurantId(email, restaurantId)) {
-            throw new CustomerConflictException(email);
-        }
     }
 }

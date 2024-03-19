@@ -14,4 +14,6 @@ public interface CustomerUseCase {
     Customer create(CreateCustomerRequest request, Restaurant restaurant);
 
     Customer update(UpdateCustomerRequest request, Customer customer);
+
+
 }
