@@ -8,7 +8,9 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -56,11 +58,11 @@ public class Product extends BaseEntity {
                 .restaurant(restaurant)
                 .build();
 
-        if(request.getServingCapacity() != null) {
+        if (request.getServingCapacity() != null) {
             product.setServingCapacity(request.getServingCapacity());
         }
 
-        if(request.getSku() != null) {
+        if (request.getSku() != null) {
             product.setSku(request.getSku());
         }
 

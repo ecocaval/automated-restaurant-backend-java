@@ -20,7 +20,7 @@ public class BillResponse {
 
     private boolean active;
 
-//    private List<CustomerOrderResponse> customerOrders;
+    private List<CustomerOrderResponse> customerOrders;
 
     private TableResponse restaurantTable;
 
@@ -30,7 +30,7 @@ public class BillResponse {
         return BillResponse.builder()
                 .id(bill.getId())
                 .active(bill.isActive())
-//                .customerOrders(bill.getCustomerOrders().stream().map(CustomerOrderResponse::fromCustomerOrder).toList())
+                .customerOrders(bill.getCustomerOrders() != null ? bill.getCustomerOrders().stream().map(CustomerOrderResponse::fromCustomerOrder).toList() : null)
                 .restaurantTable(TableResponse.fromRestaurantTable(bill.getRestaurantTable()))
                 .customers(bill.getCustomers().stream().map(CustomerResponse::fromCustomer).toList())
                 .build();

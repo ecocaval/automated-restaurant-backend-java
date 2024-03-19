@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ErrorMessages {
 
     ERROR_RESTAURANT_NOT_FOUND_BY_ID("O restaurante com este id não foi encontrado."),
+    ERROR_BILL_NOT_FOUND_BY_ID("A conta com este id não foi encontrada."),
     ERROR_IMAGE_NOT_FOUND_BY_ID("A imagem com este id não foi encontrada."),
     ERROR_CUSTOMER_NOT_FOUND_BY_ID("O client com este id não foi encontrado."),
     ERROR_ON_IMAGE_STORE("Houve um problema ao tentar salvar a imagem, verifique a extensão e integridade do arquivo e tente novamente."),
