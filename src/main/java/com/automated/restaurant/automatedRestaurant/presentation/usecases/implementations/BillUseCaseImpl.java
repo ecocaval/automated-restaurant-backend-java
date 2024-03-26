@@ -1,18 +1,23 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
-import com.automated.restaurant.automatedRestaurant.core.data.dtos.ProductDto;
+import com.automated.restaurant.automatedRestaurant.core.data.dtos.CustomerRestaurantQueueMessageDto;
+import com.automated.restaurant.automatedRestaurant.core.data.dtos.RestaurantBillMessageDto;
+import com.automated.restaurant.automatedRestaurant.core.data.enums.RestaurantBillAction;
+import com.automated.restaurant.automatedRestaurant.core.data.enums.RestaurantQueueAction;
+import com.automated.restaurant.automatedRestaurant.core.data.enums.TableStatus;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceOrderRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
 import com.automated.restaurant.automatedRestaurant.core.utils.AsyncUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.BilltNotFoundException;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.BIllRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerOrderRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerRepository;
+import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantTableRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,10 +40,16 @@ public class BillUseCaseImpl implements BillUseCase {
     private CustomerOrderRepository customerOrderRepository;
 
     @Autowired
+    private RestaurantTableRepository restaurantTableRepository;
+
+    @Autowired
     private CustomerUseCase customerUseCase;
 
     @Autowired
     private ProductUseCase productUseCase;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     public Bill findById(UUID billId) {
@@ -67,19 +78,50 @@ public class BillUseCaseImpl implements BillUseCase {
         this.customerRepository.save(customer);
 
         if (optionalBill.isEmpty()) {
+
             var newBill = Bill.builder()
                     .restaurantTable(restaurantTable)
                     .customers(List.of(customer))
                     .build();
 
-            return this.bIllRepository.save(newBill);
+            var persistedBill = this.bIllRepository.save(newBill);
+
+            this.messagingTemplate.convertAndSend(
+                    String.format("/topic/restaurant/%s/queue", restaurantTable.getRestaurant().getId()),
+                    new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.LEFT, customer)
+            );
+
+            this.messagingTemplate.convertAndSend(
+                    String.format("/topic/restaurant/%s/bill", restaurantTable.getRestaurant().getId()),
+                    new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+            );
+
+            return persistedBill;
         }
 
         var bill = optionalBill.get();
 
         bill.getCustomers().add(customer);
 
-        return this.bIllRepository.save(bill);
+        restaurantTable.setStatus(TableStatus.OCCUPIED);
+
+        bill.setRestaurantTable(restaurantTable);
+
+        this.restaurantTableRepository.save(restaurantTable);
+
+        var persistedBill = this.bIllRepository.save(bill);
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/%s/queue", restaurantTable.getRestaurant().getId()),
+                new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.LEFT, customer)
+        );
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/%s/bill", restaurantTable.getRestaurant().getId()),
+                new RestaurantBillMessageDto(RestaurantBillAction.CREATED, BillResponse.fromBill(persistedBill))
+        );
+
+        return persistedBill;
     }
 
     @Override
@@ -93,13 +135,11 @@ public class BillUseCaseImpl implements BillUseCase {
                 .map(productInformation ->  AsyncUtils.getCompletableFuture(this.productUseCase.findById(productInformation.getProductId())))
                 .toList();
 
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(
+        AsyncUtils.completeFutures(
                 customerFuture,
                 billFuture,
                 CompletableFuture.allOf(productFutures.toArray(new CompletableFuture[0]))
         );
-
-        allFutures.join();
 
         Customer customer = null;
         List<Product> products = new ArrayList<>();
@@ -129,6 +169,13 @@ public class BillUseCaseImpl implements BillUseCase {
 
         this.customerOrderRepository.save(customerOrder);
 
-        return this.findById(billId);
+        var persistedBill = this.findById(billId);
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/%s/bill", persistedBill.getRestaurantTable().getRestaurant().getId()),
+                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+        );
+
+        return persistedBill;
     }
 }

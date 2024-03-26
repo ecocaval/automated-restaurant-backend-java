@@ -1,10 +1,7 @@
 package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 
 import com.automated.restaurant.automatedRestaurant.core.data.requests.*;
-import com.automated.restaurant.automatedRestaurant.core.data.responses.JobTitleResponse;
-import com.automated.restaurant.automatedRestaurant.core.data.responses.ProductResponse;
-import com.automated.restaurant.automatedRestaurant.core.data.responses.RestaurantResponse;
-import com.automated.restaurant.automatedRestaurant.core.data.responses.TableResponse;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.*;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantImage;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +41,19 @@ public class RestaurantController {
     ) {
         return ResponseEntity.ok(
                 RestaurantResponse.fromRestaurant(this.restaurantUseCase.findById(restaurantId))
+        );
+    }
+
+    @GetMapping("/{restaurantId}/queue")
+    public ResponseEntity<List<CustomerResponse>> findAllCustomerInRestaurantQueueId(
+            @PathVariable("restaurantId") UUID restaurantId
+    ) {
+        var restaurant = this.restaurantUseCase.findById(restaurantId);
+
+        return ResponseEntity.ok(
+                restaurant.getRestaurantQueue().getCustomers() != null ?
+                        restaurant.getRestaurantQueue().getCustomers().stream().map(CustomerResponse::fromCustomer).toList() :
+                        new ArrayList<>()
         );
     }
 
@@ -142,11 +153,11 @@ public class RestaurantController {
     }
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<TableResponse> findProductById(
+    public ResponseEntity<ProductResponse> findProductById(
             @PathVariable("productId") UUID productId
     ) {
         return ResponseEntity.ok(
-                TableResponse.fromRestaurantTable(this.tableUseCase.findById(productId))
+                ProductResponse.fromProduct(this.productUseCase.findById(productId))
         );
     }
 

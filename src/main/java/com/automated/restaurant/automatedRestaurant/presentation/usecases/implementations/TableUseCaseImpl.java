@@ -8,7 +8,7 @@ import com.automated.restaurant.automatedRestaurant.presentation.entities.Restau
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.TableConflictException;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.TableNotFoundException;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.ProductRepository;
-import com.automated.restaurant.automatedRestaurant.presentation.repositories.TableRepository;
+import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantTableRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.TableUseCase;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +20,19 @@ import java.util.*;
 public class TableUseCaseImpl implements TableUseCase {
 
     @Autowired
-    private TableRepository tableRepository;
+    private RestaurantTableRepository restaurantTableRepository;
 
     @Autowired
     private ProductRepository productRepository;
 
     @Override
     public List<RestaurantTable> findAll() {
-        return this.tableRepository.findAllByOrderByIdentificationAsc();
+        return this.restaurantTableRepository.findAllByOrderByIdentificationAsc();
     }
 
     @Override
     public RestaurantTable findById(UUID id) {
-        var optionalTable = this.tableRepository.findById(id);
+        var optionalTable = this.restaurantTableRepository.findById(id);
         if (optionalTable.isEmpty()) {
             throw new TableNotFoundException(id);
         }
@@ -48,7 +48,7 @@ public class TableUseCaseImpl implements TableUseCase {
         for (CreateTableRequest request : requests) {
             validateDuplicityOnTableIdentificationOnCreation(restaurant.getId(), request.getIdentification());
             restaurantTables.add(
-                    this.tableRepository.saveAndFlush(RestaurantTable.fromCreateRequest(request, restaurant))
+                    this.restaurantTableRepository.saveAndFlush(RestaurantTable.fromCreateRequest(request, restaurant))
             );
         }
 
@@ -73,31 +73,31 @@ public class TableUseCaseImpl implements TableUseCase {
             }
         }
 
-        return this.tableRepository.saveAll(restaurant.getRestaurantTables());
+        return this.restaurantTableRepository.saveAll(restaurant.getRestaurantTables());
     }
 
     @Override
     public RestaurantTable updateStatus(RestaurantTable oldRestaurantTable, TableStatusUpdateRequest request) {
-        return this.tableRepository.saveAndFlush(
+        return this.restaurantTableRepository.saveAndFlush(
                 new RestaurantTable(oldRestaurantTable, request.getStatus())
         );
     }
 
     @Override
     public void deleteAll(List<UUID> tableIds) {
-        this.tableRepository.deleteAll(
-                this.tableRepository.findByIdIn(tableIds)
+        this.restaurantTableRepository.deleteAll(
+                this.restaurantTableRepository.findByIdIn(tableIds)
         );
     }
 
     private void validateDuplicityOnTableIdentificationOnCreation(UUID restaurantId, String identification) {
-        if (this.tableRepository.existsByRestaurantIdAndIdentification(restaurantId, identification)) {
+        if (this.restaurantTableRepository.existsByRestaurantIdAndIdentification(restaurantId, identification)) {
             throw new TableConflictException(identification);
         }
     }
 
     private void validateDuplicityOnTableIdentificationOnUpdate(UUID restaurantId, String identification, UUID tableId) {
-        if (this.tableRepository.existsByRestaurantIdAndIdentificationAndIdNotIn(restaurantId, identification, List.of(tableId))) {
+        if (this.restaurantTableRepository.existsByRestaurantIdAndIdentificationAndIdNotIn(restaurantId, identification, List.of(tableId))) {
             throw new TableConflictException(identification);
         }
     }

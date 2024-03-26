@@ -5,7 +5,7 @@ import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateRes
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.*;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantRepository;
-import com.automated.restaurant.automatedRestaurant.presentation.repositories.TableRepository;
+import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantTableRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.ImageStoreUseCase;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.RestaurantUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class RestaurantUseCaseImpl implements RestaurantUseCase {
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    private TableRepository tableRepository;
+    private RestaurantTableRepository restaurantTableRepository;
 
     @Autowired
     private ImageStoreUseCase imageStoreUseCase;

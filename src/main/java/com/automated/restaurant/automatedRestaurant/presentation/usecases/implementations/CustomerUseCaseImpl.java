@@ -1,17 +1,18 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
+import com.automated.restaurant.automatedRestaurant.core.data.dtos.CustomerRestaurantQueueMessageDto;
+import com.automated.restaurant.automatedRestaurant.core.data.enums.RestaurantQueueAction;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateCustomerRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerRequest;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Customer;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
-import com.automated.restaurant.automatedRestaurant.presentation.exceptions.CustomerConflictException;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.CustomerNotFoundException;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.CustomerUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +21,9 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     public Customer findById(UUID id) {
@@ -35,7 +39,15 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
         );
 
         if(optionalAlreadyExistingCustomer.isEmpty()) {
-            return this.customerRepository.save(Customer.fromCreateRequest(request, restaurant));
+
+            var customer = this.customerRepository.save(Customer.fromCreateRequest(request, restaurant));
+
+            this.messagingTemplate.convertAndSend(
+                    String.format("/topic/restaurant/%s/queue", restaurant.getId()),
+                    new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.ENTERED, customer)
+            );
+
+            return customer;
         }
 
         /* FIXME: should send SMS to confirm if it is the real person, otherwise sensitive
@@ -49,7 +61,14 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
             customer.getRestaurants().add(restaurant);
         }
 
-        return this.customerRepository.save(customer);
+        this.customerRepository.save(customer);
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/%s/queue", restaurant.getId()),
+                new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.ENTERED, customer)
+        );
+
+        return customer;
     }
 
     @Override
