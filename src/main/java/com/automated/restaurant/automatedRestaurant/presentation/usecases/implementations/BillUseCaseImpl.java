@@ -93,7 +93,7 @@ public class BillUseCaseImpl implements BillUseCase {
 
             this.messagingTemplate.convertAndSend(
                     String.format("/topic/restaurant/%s/bill", restaurantTable.getRestaurant().getId()),
-                    new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+                    new RestaurantBillMessageDto(RestaurantBillAction.CREATED, BillResponse.fromBill(persistedBill))
             );
 
             return persistedBill;
@@ -118,7 +118,7 @@ public class BillUseCaseImpl implements BillUseCase {
 
         this.messagingTemplate.convertAndSend(
                 String.format("/topic/restaurant/%s/bill", restaurantTable.getRestaurant().getId()),
-                new RestaurantBillMessageDto(RestaurantBillAction.CREATED, BillResponse.fromBill(persistedBill))
+                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
         );
 
         return persistedBill;
