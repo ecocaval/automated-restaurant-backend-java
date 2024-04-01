@@ -1,8 +1,8 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateTableRequest;
-import com.automated.restaurant.automatedRestaurant.core.data.requests.TableStatusUpdateRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateTableRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.TableResponse;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantTable;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.TableConflictException;
@@ -12,6 +12,7 @@ import com.automated.restaurant.automatedRestaurant.presentation.repositories.Re
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.TableUseCase;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,6 +25,9 @@ public class TableUseCaseImpl implements TableUseCase {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     public List<RestaurantTable> findAll() {
@@ -63,24 +67,28 @@ public class TableUseCaseImpl implements TableUseCase {
             for (RestaurantTable restaurantTable : restaurant.getRestaurantTables()) {
 
                 if (restaurantTable.getId().equals(request.getId())) {
+
                     Optional.ofNullable(request.getIdentification()).ifPresent(identification -> {
                         validateDuplicityOnTableIdentificationOnUpdate(restaurant.getId(), request.getIdentification(), request.getId());
                         restaurantTable.setIdentification(identification);
                     });
+
                     Optional.ofNullable(request.getCapacity()).ifPresent(restaurantTable::setCapacity);
-                    Optional.ofNullable(request.getStatus()).ifPresent(restaurantTable::setStatus);
+
+                    Optional.ofNullable(request.getStatus()).ifPresent(tableStatus -> {
+
+                        restaurantTable.setStatus(tableStatus);
+
+                        this.messagingTemplate.convertAndSend(
+                                String.format("/topic/restaurant/%s/table", restaurantTable.getRestaurant().getId()),
+                                TableResponse.fromRestaurantTable(restaurantTable)
+                        );
+                    });
                 }
             }
         }
 
         return this.restaurantTableRepository.saveAll(restaurant.getRestaurantTables());
-    }
-
-    @Override
-    public RestaurantTable updateStatus(RestaurantTable oldRestaurantTable, TableStatusUpdateRequest request) {
-        return this.restaurantTableRepository.saveAndFlush(
-                new RestaurantTable(oldRestaurantTable, request.getStatus())
-        );
     }
 
     @Override

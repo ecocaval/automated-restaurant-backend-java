@@ -19,7 +19,5 @@ public interface TableUseCase {
 
     List<RestaurantTable> updateAll(List<UpdateTableRequest> requests, Restaurant restaurant);
 
-    RestaurantTable updateStatus(RestaurantTable oldRestaurantTable, TableStatusUpdateRequest request);
-
     void deleteAll(List<UUID> tableIds);
 }

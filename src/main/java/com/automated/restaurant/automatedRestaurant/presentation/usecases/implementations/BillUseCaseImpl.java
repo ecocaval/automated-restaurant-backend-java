@@ -9,6 +9,7 @@ import com.automated.restaurant.automatedRestaurant.core.data.enums.TableStatus;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceOrderRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrderResponse;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.TableResponse;
 import com.automated.restaurant.automatedRestaurant.core.utils.AsyncUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.BilltNotFoundException;
@@ -88,6 +89,8 @@ public class BillUseCaseImpl implements BillUseCase {
 
             var persistedBill = this.bIllRepository.save(newBill);
 
+            setRestaurantTableAsOccupied(restaurantTable);
+
             this.messagingTemplate.convertAndSend(
                     String.format("/topic/restaurant/%s/queue", restaurantTable.getRestaurant().getId()),
                     new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.LEFT, customer)
@@ -105,7 +108,7 @@ public class BillUseCaseImpl implements BillUseCase {
 
         bill.getCustomers().add(customer);
 
-        restaurantTable.setStatus(TableStatus.OCCUPIED);
+        setRestaurantTableAsOccupied(restaurantTable);
 
         bill.setRestaurantTable(restaurantTable);
 
@@ -197,5 +200,17 @@ public class BillUseCaseImpl implements BillUseCase {
         );
 
         return persistedBill;
+    }
+
+    private void setRestaurantTableAsOccupied(RestaurantTable restaurantTable) {
+
+        restaurantTable.setStatus(TableStatus.OCCUPIED);
+
+        restaurantTableRepository.save(restaurantTable);
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/%s/table", restaurantTable.getRestaurant().getId()),
+                TableResponse.fromRestaurantTable(restaurantTable)
+        );
     }
 }
