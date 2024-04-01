@@ -28,10 +28,6 @@ public class CustomerResponse {
 
     private String cellPhone;
 
-    private List<UUID> customerOrderIds;
-
-    private List<UUID> restaurantIds;
-
     public static CustomerResponse fromCustomer(Customer customer) {
         return CustomerResponse.builder()
                 .id(customer.getId())
@@ -39,8 +35,6 @@ public class CustomerResponse {
                 .email(customer.getEmail())
                 .cellPhoneAreaCode(customer.getCellPhoneAreaCode())
                 .cellPhone(customer.getCellPhone())
-                .customerOrderIds(customer.getCustomerOrders() != null ? customer.getCustomerOrders().stream().map(BaseEntity::getId).toList() : null)
-                .restaurantIds(customer.getRestaurants() != null ? customer.getRestaurants().stream().map(Restaurant::getId).toList() : null)
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
+import com.automated.restaurant.automatedRestaurant.core.data.dtos.CustomerOrderMessageDto;
 import com.automated.restaurant.automatedRestaurant.core.data.dtos.CustomerRestaurantQueueMessageDto;
 import com.automated.restaurant.automatedRestaurant.core.data.dtos.RestaurantBillMessageDto;
 import com.automated.restaurant.automatedRestaurant.core.data.enums.RestaurantBillAction;
@@ -7,6 +8,7 @@ import com.automated.restaurant.automatedRestaurant.core.data.enums.RestaurantQu
 import com.automated.restaurant.automatedRestaurant.core.data.enums.TableStatus;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceOrderRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrderResponse;
 import com.automated.restaurant.automatedRestaurant.core.utils.AsyncUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.BilltNotFoundException;
@@ -121,6 +123,11 @@ public class BillUseCaseImpl implements BillUseCase {
                 new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
         );
 
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant//bill/%s", persistedBill.getId()),
+                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+        );
+
         return persistedBill;
     }
 
@@ -162,7 +169,7 @@ public class BillUseCaseImpl implements BillUseCase {
         }
 
         if(customer == null || bill == null) {
-            throw new RuntimeException();
+            throw new RuntimeException(); //FIXME
         }
 
         var customerOrder = CustomerOrder.fromPlaceOrderRequest(customer, products, bill, request);
@@ -172,7 +179,20 @@ public class BillUseCaseImpl implements BillUseCase {
         var persistedBill = this.findById(billId);
 
         this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/%s/orders", persistedBill.getRestaurantTable().getRestaurant().getId()),
+                new CustomerOrderMessageDto(
+                        persistedBill.getRestaurantTable().getIdentification(),
+                        CustomerOrderResponse.fromCustomerOrder(customerOrder)
+                )
+        );
+
+        this.messagingTemplate.convertAndSend(
                 String.format("/topic/restaurant/%s/bill", persistedBill.getRestaurantTable().getRestaurant().getId()),
+                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+        );
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/bill/%s", persistedBill.getId()),
                 new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
         );
 
