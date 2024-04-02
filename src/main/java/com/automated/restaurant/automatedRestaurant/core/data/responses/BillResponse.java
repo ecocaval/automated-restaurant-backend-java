@@ -1,7 +1,6 @@
 package com.automated.restaurant.automatedRestaurant.core.data.responses;
 
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +21,7 @@ public class BillResponse {
 
     private List<CustomerOrderResponse> customerOrders;
 
-    private TableResponse restaurantTable;
+    private RestaurantTableResponse restaurantTable;
 
     private List<CustomerResponse> customers;
 
@@ -31,7 +30,7 @@ public class BillResponse {
                 .id(bill.getId())
                 .active(bill.isActive())
                 .customerOrders(bill.getCustomerOrders() != null ? bill.getCustomerOrders().stream().map(CustomerOrderResponse::fromCustomerOrder).toList() : null)
-                .restaurantTable(TableResponse.fromRestaurantTable(bill.getRestaurantTable()))
+                .restaurantTable(RestaurantTableResponse.fromRestaurantTable(bill.getRestaurantTable()))
                 .customers(bill.getCustomers().stream().map(CustomerResponse::fromCustomer).toList())
                 .build();
     }

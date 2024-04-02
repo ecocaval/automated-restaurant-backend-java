@@ -3,8 +3,6 @@ package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceOrderRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Bill;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.Customer;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.Product;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/v1/bill")
@@ -27,7 +23,7 @@ public class BillController {
     private CustomerUseCase customerUseCase;
 
     @Autowired
-    private TableUseCase tableUseCase;
+    private RestaurantTableUseCase restaurantTableUseCase;
 
     @Autowired
     private BillUseCase billUseCase;
@@ -53,7 +49,7 @@ public class BillController {
     ) {
         var customer = this.customerUseCase.findById(customerId);
 
-        var restaurantTable = this.tableUseCase.findById(tableId);
+        var restaurantTable = this.restaurantTableUseCase.findById(tableId);
 
         var optionalExistingBillForTable = this.billUseCase.findByRestaurantTableAndActiveTrue(restaurantTable);
 

@@ -1,27 +1,29 @@
 package com.automated.restaurant.automatedRestaurant.core.data.responses;
 
+import com.automated.restaurant.automatedRestaurant.core.data.enums.OrderStatus;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.CustomerOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class CustomerOrderResponse {
+public class OrderResponse {
 
-    private CustomerResponse customer;
+    private Long quantity;
 
-    private List<ProductOrderInfoResponse> productOrderInfo;
+    private ProductResponse product;
 
-    public static CustomerOrderResponse fromCustomerOrder(CustomerOrder customerOrder) {
-        return CustomerOrderResponse.builder()
-                .customer(CustomerResponse.fromCustomer(customerOrder.getCustomer()))
-                .productOrderInfo(customerOrder.getProductOrderInfo().stream().map(ProductOrderInfoResponse::fromProductOrderInfo).toList())
+    private OrderStatus status;
+
+    public static OrderResponse fromOrder(CustomerOrder customerOrder) {
+        return OrderResponse.builder()
+                .quantity(customerOrder.getQuantity())
+                .product(ProductResponse.fromProduct(customerOrder.getProduct()))
+                .status(customerOrder.getStatus())
                 .build();
     }
 }

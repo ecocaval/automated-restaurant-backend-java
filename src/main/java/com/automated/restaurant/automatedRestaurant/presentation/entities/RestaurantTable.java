@@ -18,9 +18,9 @@ import java.util.List;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"identification", "restaurant_id"})})
 public class RestaurantTable extends BaseEntity {
 
-    @Column(columnDefinition = "bool default TRUE", nullable = false)
+    @Column(columnDefinition = "bool default FALSE", nullable = false)
     @Builder.Default
-    private boolean active = true;
+    private boolean isCallingWaiter = false;
 
     @Column(nullable = false)
     private String identification;

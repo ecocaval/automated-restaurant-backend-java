@@ -24,7 +24,7 @@ public class RestaurantController {
     private RestaurantUseCase restaurantUseCase;
 
     @Autowired
-    private TableUseCase tableUseCase;
+    private RestaurantTableUseCase restaurantTableUseCase;
 
     @Autowired
     private ProductUseCase productUseCase;
@@ -95,16 +95,16 @@ public class RestaurantController {
     }
 
     @GetMapping("/table/{tableId}")
-    public ResponseEntity<TableResponse> findTableById(
+    public ResponseEntity<RestaurantTableResponse> findTableById(
             @PathVariable("tableId") UUID tableId
     ) {
         return ResponseEntity.ok(
-                TableResponse.fromRestaurantTable(this.tableUseCase.findById(tableId))
+                RestaurantTableResponse.fromRestaurantTable(this.restaurantTableUseCase.findById(tableId))
         );
     }
 
     @GetMapping("/{restaurantId}/tables")
-    public ResponseEntity<List<TableResponse>> findTablesByRestaurantId(
+    public ResponseEntity<List<RestaurantTableResponse>> findTablesByRestaurantId(
             @PathVariable("restaurantId") UUID restaurantId
     ) {
         return ResponseEntity.ok(
@@ -114,31 +114,31 @@ public class RestaurantController {
 
 
     @PostMapping("/{restaurantId}/tables")
-    public ResponseEntity<List<TableResponse>> createTables(
+    public ResponseEntity<List<RestaurantTableResponse>> createTables(
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody @Valid List<CreateTableRequest> requests
     ) {
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                this.tableUseCase.createAll(restaurant, requests)
+                this.restaurantTableUseCase.createAll(restaurant, requests)
                         .stream()
-                        .map(TableResponse::fromRestaurantTable)
+                        .map(RestaurantTableResponse::fromRestaurantTable)
                         .toList()
         );
     }
 
     @PatchMapping("/{restaurantId}/tables")
-    public ResponseEntity<List<TableResponse>> updateTables(
+    public ResponseEntity<List<RestaurantTableResponse>> updateTables(
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody @Valid List<UpdateTableRequest> requests
     ) {
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                this.tableUseCase.updateAll(requests, restaurant)
+                this.restaurantTableUseCase.updateAll(requests, restaurant)
                         .stream()
-                        .map(TableResponse::fromRestaurantTable)
+                        .map(RestaurantTableResponse::fromRestaurantTable)
                         .toList()
         );
     }
@@ -147,7 +147,7 @@ public class RestaurantController {
     public ResponseEntity<?> deleteTables(
             @PathVariable("tableIds") List<UUID> tableIds
     ) {
-        this.tableUseCase.deleteAll(tableIds);
+        this.restaurantTableUseCase.deleteAll(tableIds);
 
         return ResponseEntity.ok().build();
     }

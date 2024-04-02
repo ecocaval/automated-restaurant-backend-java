@@ -9,7 +9,7 @@ import com.automated.restaurant.automatedRestaurant.core.data.enums.TableStatus;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceOrderRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrderResponse;
-import com.automated.restaurant.automatedRestaurant.core.data.responses.TableResponse;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.RestaurantTableResponse;
 import com.automated.restaurant.automatedRestaurant.core.utils.AsyncUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.BilltNotFoundException;
@@ -210,7 +210,7 @@ public class BillUseCaseImpl implements BillUseCase {
 
         this.messagingTemplate.convertAndSend(
                 String.format("/topic/restaurant/%s/table", restaurantTable.getRestaurant().getId()),
-                TableResponse.fromRestaurantTable(restaurantTable)
+                RestaurantTableResponse.fromRestaurantTable(restaurantTable)
         );
     }
 }

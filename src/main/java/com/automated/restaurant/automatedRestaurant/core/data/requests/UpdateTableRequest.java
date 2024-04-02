@@ -16,7 +16,7 @@ public class UpdateTableRequest {
     @NotNull(message = "O id da mesa a ser atualizada não pode ser nulo.")
     private UUID id;
 
-    private Boolean active;
+    private Boolean isCallingWaiter;
 
     private String identification;
 
