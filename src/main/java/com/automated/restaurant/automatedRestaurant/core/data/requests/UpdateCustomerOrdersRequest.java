@@ -1,5 +1,6 @@
 package com.automated.restaurant.automatedRestaurant.core.data.requests;
 
+import com.automated.restaurant.automatedRestaurant.core.data.enums.CustomerOrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,16 +17,18 @@ public class UpdateCustomerOrdersRequest {
     @NotNull(message = "O id do cliente ao fazer o pedido não pode ser nulo.")
     private UUID customerId;
 
-    private List<ProductInformation> productInformation;
+    private List<OrderInformation> orderInformation;
 
     @NoArgsConstructor
     @AllArgsConstructor
     @Data
-    public static class ProductInformation {
+    public static class OrderInformation {
 
         @NotNull(message = "O id do produto ao fazer o pedido não pode ser nulo.")
-        private UUID productId;
+        private UUID orderId;
 
-        private Long quantity = 1L;
+        private Long quantity;
+
+        private CustomerOrderStatus status;
     }
 }

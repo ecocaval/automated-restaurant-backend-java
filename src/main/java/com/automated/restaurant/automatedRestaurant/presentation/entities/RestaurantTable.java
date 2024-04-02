@@ -8,7 +8,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor

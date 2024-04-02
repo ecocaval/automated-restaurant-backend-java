@@ -6,16 +6,17 @@ import com.automated.restaurant.automatedRestaurant.core.data.dtos.RestaurantBil
 import com.automated.restaurant.automatedRestaurant.core.data.enums.RestaurantBillAction;
 import com.automated.restaurant.automatedRestaurant.core.data.enums.RestaurantQueueAction;
 import com.automated.restaurant.automatedRestaurant.core.data.enums.TableStatus;
-import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceOrderRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceCustomerOrdersRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerOrdersRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
-import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrderResponse;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrdersResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.RestaurantTableResponse;
 import com.automated.restaurant.automatedRestaurant.core.utils.AsyncUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.BilltNotFoundException;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.BIllRepository;
-import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerOrderRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerRepository;
+import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerOrderRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantTableRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import jakarta.transaction.Transactional;
@@ -106,6 +107,10 @@ public class BillUseCaseImpl implements BillUseCase {
 
         var bill = optionalBill.get();
 
+        if (bill.getCustomers().contains(customer)) {
+            return bill;
+        }
+
         bill.getCustomers().add(customer);
 
         setRestaurantTableAsOccupied(restaurantTable);
@@ -135,7 +140,7 @@ public class BillUseCaseImpl implements BillUseCase {
     }
 
     @Override
-    public Bill placeOrderToBill(PlaceOrderRequest request, UUID billId) {
+    public Bill placeOrders(PlaceCustomerOrdersRequest request, UUID billId) {
 
         CompletableFuture<Customer> customerFuture = AsyncUtils.getCompletableFuture(this.customerUseCase.findById(request.getCustomerId()));
 
@@ -175,9 +180,27 @@ public class BillUseCaseImpl implements BillUseCase {
             throw new RuntimeException(); //FIXME
         }
 
-        var customerOrder = CustomerOrder.fromPlaceOrderRequest(customer, products, bill, request);
+        List<CustomerOrder> customerOrderList = new ArrayList<>();
 
-        this.customerOrderRepository.save(customerOrder);
+        Customer finalCustomer = customer;
+
+        Bill finalBill = bill;
+
+        products.forEach(product -> {
+            customerOrderList.add(
+                    CustomerOrder.builder()
+                            .quantity(request.getProductInformation().stream().filter(productInformation ->
+                                            productInformation.getProductId().equals(product.getId())
+                                    ).toList().get(0).getQuantity()
+                            )
+                            .bill(finalBill)
+                            .product(product)
+                            .customer(finalCustomer)
+                            .build()
+            );
+        });
+
+        this.customerOrderRepository.saveAll(customerOrderList);
 
         var persistedBill = this.findById(billId);
 
@@ -185,7 +208,7 @@ public class BillUseCaseImpl implements BillUseCase {
                 String.format("/topic/restaurant/%s/orders", persistedBill.getRestaurantTable().getRestaurant().getId()),
                 new CustomerOrderMessageDto(
                         persistedBill.getRestaurantTable().getIdentification(),
-                        CustomerOrderResponse.fromCustomerOrder(customerOrder)
+                        CustomerOrdersResponse.fromCustomerAndOrders(customer, customerOrderList)
                 )
         );
 
@@ -202,11 +225,80 @@ public class BillUseCaseImpl implements BillUseCase {
         return persistedBill;
     }
 
+    @Override
+    public Bill updateOrders(UpdateCustomerOrdersRequest request, UUID billId) {
+
+        CompletableFuture<Customer> customerFuture = AsyncUtils.getCompletableFuture(this.customerUseCase.findById(request.getCustomerId()));
+
+        CompletableFuture<Bill> billFuture = AsyncUtils.getCompletableFuture(this.findById(billId));
+
+        AsyncUtils.completeFutures(
+                customerFuture,
+                billFuture
+        );
+
+        Customer customer = null;
+        Bill bill = null;
+
+        try {
+            customer = customerFuture.get();
+            bill = billFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        if(customer == null || bill == null) {
+            throw new RuntimeException(); //FIXME
+        }
+
+        Bill finalBill = bill;
+
+        List<CustomerOrder> ordersToUpdate = new ArrayList<>();
+
+        request.getOrderInformation().forEach(orderInformation -> {
+
+            var currentOrder = finalBill.getCustomerOrders().stream().filter(customerOrder ->
+                    orderInformation.getOrderId().equals(customerOrder.getId())
+            ).toList().get(0);
+
+            Optional.ofNullable(orderInformation.getQuantity()).ifPresent(currentOrder::setQuantity);
+
+            Optional.ofNullable(orderInformation.getStatus()).ifPresent(currentOrder::setStatus);
+
+            ordersToUpdate.add(currentOrder);
+        });
+
+        this.customerOrderRepository.saveAll(ordersToUpdate);
+
+        var persistedBill = this.findById(billId);
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/%s/orders", persistedBill.getRestaurantTable().getRestaurant().getId()),
+                new CustomerOrderMessageDto(
+                        persistedBill.getRestaurantTable().getIdentification(),
+                        CustomerOrdersResponse.fromCustomerAndOrders(customer, ordersToUpdate)
+                )
+        );
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/%s/bill", persistedBill.getRestaurantTable().getRestaurant().getId()),
+                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+        );
+
+        this.messagingTemplate.convertAndSend(
+                String.format("/topic/restaurant/bill/%s", persistedBill.getId()),
+                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+        );
+
+        return persistedBill;
+
+    }
+
     private void setRestaurantTableAsOccupied(RestaurantTable restaurantTable) {
 
         restaurantTable.setStatus(TableStatus.OCCUPIED);
 
-        restaurantTableRepository.save(restaurantTable);
+        this.restaurantTableRepository.save(restaurantTable);
 
         this.messagingTemplate.convertAndSend(
                 String.format("/topic/restaurant/%s/table", restaurantTable.getRestaurant().getId()),

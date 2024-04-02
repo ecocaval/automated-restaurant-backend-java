@@ -1,6 +1,7 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases;
 
-import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceOrderRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceCustomerOrdersRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerOrdersRequest;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Bill;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Customer;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantTable;
@@ -19,5 +20,7 @@ public interface BillUseCase {
 
     Bill bindCustomerToBill(Customer customer, Optional<Bill> optionalBill, RestaurantTable restaurantTable);
 
-    Bill placeOrderToBill(PlaceOrderRequest request, UUID billId);
+    Bill placeOrders(PlaceCustomerOrdersRequest request, UUID billId);
+
+    Bill updateOrders(UpdateCustomerOrdersRequest request, UUID billId);
 }

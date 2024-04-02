@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PlaceOrderRequest {
+public class PlaceCustomerOrdersRequest {
 
     @NotNull(message = "O id do cliente ao fazer o pedido não pode ser nulo.")
     private UUID customerId;

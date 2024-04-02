@@ -1,6 +1,6 @@
 package com.automated.restaurant.automatedRestaurant.core.data.responses;
 
-import com.automated.restaurant.automatedRestaurant.core.data.enums.OrderStatus;
+import com.automated.restaurant.automatedRestaurant.core.data.enums.CustomerOrderStatus;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.CustomerOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,16 +11,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class OrderResponse {
+public class CustomerOrderResponse {
 
     private Long quantity;
 
     private ProductResponse product;
 
-    private OrderStatus status;
+    private CustomerOrderStatus status;
 
-    public static OrderResponse fromOrder(CustomerOrder customerOrder) {
-        return OrderResponse.builder()
+    public static CustomerOrderResponse fromOrder(CustomerOrder customerOrder) {
+        return CustomerOrderResponse.builder()
                 .quantity(customerOrder.getQuantity())
                 .product(ProductResponse.fromProduct(customerOrder.getProduct()))
                 .status(customerOrder.getStatus())

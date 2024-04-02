@@ -1,15 +1,11 @@
 package com.automated.restaurant.automatedRestaurant.core.data.responses;
 
-import com.automated.restaurant.automatedRestaurant.presentation.entities.BaseEntity;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Customer;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.CustomerOrder;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor

@@ -1,6 +1,6 @@
 package com.automated.restaurant.automatedRestaurant.presentation.entities;
 
-import com.automated.restaurant.automatedRestaurant.core.data.enums.OrderStatus;
+import com.automated.restaurant.automatedRestaurant.core.data.enums.CustomerOrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -13,9 +13,9 @@ import org.hibernate.annotations.SQLRestriction;
 @SuperBuilder
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE product_info SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE customer_order SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
-public class Order extends BaseEntity {
+public class CustomerOrder extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
@@ -33,6 +33,7 @@ public class Order extends BaseEntity {
     private Product product;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private OrderStatus status = OrderStatus.QUEUE;
+    private CustomerOrderStatus status = CustomerOrderStatus.QUEUE;
 }

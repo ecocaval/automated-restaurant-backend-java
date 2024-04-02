@@ -11,7 +11,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @AllArgsConstructor

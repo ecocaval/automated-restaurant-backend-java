@@ -1,6 +1,7 @@
 package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 
-import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceOrderRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceCustomerOrdersRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerOrdersRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Bill;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
@@ -69,13 +70,23 @@ public class BillController {
         );
     }
 
-    @PostMapping("{billId}")
-    private ResponseEntity<BillResponse> placeOrder(
+    @PostMapping("{billId}/orders")
+    private ResponseEntity<BillResponse> placeOrders(
             @PathVariable("billId") UUID billId,
-            @RequestBody PlaceOrderRequest request
+            @RequestBody PlaceCustomerOrdersRequest request
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            BillResponse.fromBill(this.billUseCase.placeOrderToBill(request, billId))
+            BillResponse.fromBill(this.billUseCase.placeOrders(request, billId))
+        );
+    }
+
+    @PatchMapping("{billId}/orders")
+    private ResponseEntity<BillResponse> updateOrders(
+            @PathVariable("billId") UUID billId,
+            @RequestBody UpdateCustomerOrdersRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                BillResponse.fromBill(this.billUseCase.updateOrders(request, billId))
         );
     }
 
