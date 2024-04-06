@@ -9,25 +9,19 @@ import com.automated.restaurant.automatedRestaurant.core.data.enums.TableStatus;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceCustomerOrdersRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerOrdersRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
-import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrdersResponse;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrderResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.RestaurantTableResponse;
 import com.automated.restaurant.automatedRestaurant.core.utils.AsyncUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.BilltNotFoundException;
-import com.automated.restaurant.automatedRestaurant.presentation.repositories.BIllRepository;
-import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerRepository;
-import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerOrderRepository;
-import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantTableRepository;
+import com.automated.restaurant.automatedRestaurant.presentation.repositories.*;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -42,6 +36,9 @@ public class BillUseCaseImpl implements BillUseCase {
 
     @Autowired
     private CustomerOrderRepository customerOrderRepository;
+
+    @Autowired
+    private ProductOrderRepository productOrderRepository;
 
     @Autowired
     private RestaurantTableRepository restaurantTableRepository;
@@ -147,7 +144,7 @@ public class BillUseCaseImpl implements BillUseCase {
         CompletableFuture<Bill> billFuture = AsyncUtils.getCompletableFuture(this.findById(billId));
 
         List<CompletableFuture<Product>> productFutures = request.getProductInformation().stream()
-                .map(productInformation ->  AsyncUtils.getCompletableFuture(this.productUseCase.findById(productInformation.getProductId())))
+                .map(productInformation -> AsyncUtils.getCompletableFuture(this.productUseCase.findById(productInformation.getProductId())))
                 .toList();
 
         AsyncUtils.completeFutures(
@@ -176,31 +173,36 @@ public class BillUseCaseImpl implements BillUseCase {
             Thread.currentThread().interrupt();
         }
 
-        if(customer == null || bill == null) {
+        if (customer == null || bill == null) {
             throw new RuntimeException(); //FIXME
         }
-
-        List<CustomerOrder> customerOrderList = new ArrayList<>();
 
         Customer finalCustomer = customer;
 
         Bill finalBill = bill;
 
+        List<ProductOrder> productOrderList = new ArrayList<>();
+
+        CustomerOrder customerOrder = CustomerOrder.builder()
+                .bill(finalBill)
+                .customer(finalCustomer)
+                .build();
+
         products.forEach(product -> {
-            customerOrderList.add(
-                    CustomerOrder.builder()
+            productOrderList.add(
+                    ProductOrder.builder()
                             .quantity(request.getProductInformation().stream().filter(productInformation ->
-                                            productInformation.getProductId().equals(product.getId())
-                                    ).toList().get(0).getQuantity()
-                            )
-                            .bill(finalBill)
+                                    productInformation.getProductId().equals(product.getId())
+                            ).toList().get(0).getQuantity())
                             .product(product)
-                            .customer(finalCustomer)
+                            .customerOrder(customerOrder)
                             .build()
             );
         });
 
-        this.customerOrderRepository.saveAll(customerOrderList);
+        customerOrder.setProductOrders(productOrderList);
+
+        this.customerOrderRepository.save(customerOrder);
 
         var persistedBill = this.findById(billId);
 
@@ -208,7 +210,7 @@ public class BillUseCaseImpl implements BillUseCase {
                 String.format("/topic/restaurant/%s/orders", persistedBill.getRestaurantTable().getRestaurant().getId()),
                 new CustomerOrderMessageDto(
                         persistedBill.getRestaurantTable().getIdentification(),
-                        CustomerOrdersResponse.fromCustomerAndOrders(customer, customerOrderList)
+                        CustomerOrderResponse.fromCustomerOrder(customerOrder)
                 )
         );
 
@@ -247,51 +249,88 @@ public class BillUseCaseImpl implements BillUseCase {
             Thread.currentThread().interrupt();
         }
 
-        if(customer == null || bill == null) {
+        if (customer == null || bill == null) {
             throw new RuntimeException(); //FIXME
         }
 
         Bill finalBill = bill;
 
-        List<CustomerOrder> ordersToUpdate = new ArrayList<>();
+        Set<UUID> customerOrdersChangedIds = new HashSet<>();
 
-        request.getOrderInformation().forEach(orderInformation -> {
+        List<CustomerOrder> customerOrdersToUpdate = new ArrayList<>();
 
-            var currentOrder = finalBill.getCustomerOrders().stream().filter(customerOrder ->
-                    orderInformation.getOrderId().equals(customerOrder.getId())
+        request.getCustomerOrderInformation().forEach(customerOrderInformation -> {
+
+            CustomerOrder currentOrder = finalBill.getCustomerOrders().stream().filter(customerOrder ->
+                    customerOrderInformation.getCustomerOrderId().equals(customerOrder.getId())
             ).toList().get(0);
 
-            Optional.ofNullable(orderInformation.getQuantity()).ifPresent(currentOrder::setQuantity);
+            Optional.ofNullable(customerOrderInformation.getStatus()).ifPresent(currentOrder::setStatus);
 
-            Optional.ofNullable(orderInformation.getStatus()).ifPresent(currentOrder::setStatus);
+            customerOrdersToUpdate.add(currentOrder);
 
-            ordersToUpdate.add(currentOrder);
+            customerOrdersChangedIds.add(currentOrder.getId());
         });
 
-        this.customerOrderRepository.saveAll(ordersToUpdate);
+        this.customerOrderRepository.saveAll(customerOrdersToUpdate);
+
+        List<ProductOrder> productOrdersToUpdate = new ArrayList<>();
+
+        request.getProductOrderInformation().forEach(productOrderInformation -> {
+
+            ProductOrder productOrder = finalBill.getCustomerOrders()
+                    .stream()
+                    .filter(customerOrder -> productOrderInformation.getCustomerOrderId().equals(customerOrder.getId()))
+                    .findFirst()
+                    .get()
+                    .getProductOrders()
+                    .stream()
+                    .filter(productOrderInfo -> productOrderInformation.getProductOrderId().equals(productOrderInfo.getId()))
+                    .findFirst()
+                    .get();
+
+            Optional.ofNullable(productOrderInformation.getStatus()).ifPresent(productOrder::setStatus);
+
+            Optional.ofNullable(productOrderInformation.getQuantity()).ifPresent(productOrder::setQuantity);
+
+            productOrdersToUpdate.add(productOrder);
+
+            customerOrdersChangedIds.add(productOrder.getCustomerOrder().getId());
+        });
+
+        this.productOrderRepository.saveAll(productOrdersToUpdate);
 
         var persistedBill = this.findById(billId);
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/%s/orders", persistedBill.getRestaurantTable().getRestaurant().getId()),
-                new CustomerOrderMessageDto(
-                        persistedBill.getRestaurantTable().getIdentification(),
-                        CustomerOrdersResponse.fromCustomerAndOrders(customer, ordersToUpdate)
-                )
-        );
+        customerOrdersChangedIds.forEach(id -> {
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/%s/bill", persistedBill.getRestaurantTable().getRestaurant().getId()),
-                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
-        );
+            var customerOrder = persistedBill.getCustomerOrders()
+                    .stream()
+                    .filter(customerOrder1 -> customerOrder1.getId().equals(id))
+                    .findFirst()
+                    .get();
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/bill/%s", persistedBill.getId()),
-                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
-        );
+
+            this.messagingTemplate.convertAndSend(
+                    String.format("/topic/restaurant/%s/orders", persistedBill.getRestaurantTable().getRestaurant().getId()),
+                    new CustomerOrderMessageDto(
+                            persistedBill.getRestaurantTable().getIdentification(),
+                            CustomerOrderResponse.fromCustomerOrder(customerOrder)
+                    )
+            );
+
+            this.messagingTemplate.convertAndSend(
+                    String.format("/topic/restaurant/%s/bill", persistedBill.getRestaurantTable().getRestaurant().getId()),
+                    new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+            );
+
+            this.messagingTemplate.convertAndSend(
+                    String.format("/topic/restaurant/bill/%s", persistedBill.getId()),
+                    new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+            );
+        });
 
         return persistedBill;
-
     }
 
     private void setRestaurantTableAsOccupied(RestaurantTable restaurantTable) {

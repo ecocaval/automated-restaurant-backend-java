@@ -7,12 +7,15 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
 @Getter
 @Setter
+@Table(name = "customer_order")
 @SQLDelete(sql = "UPDATE customer_order SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 public class CustomerOrder extends BaseEntity {
@@ -21,19 +24,15 @@ public class CustomerOrder extends BaseEntity {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerOrder")
+    private List<ProductOrder> productOrders;
+
     @ManyToOne
     @JoinColumn(name = "bill_id", nullable = false)
     private Bill bill;
 
-    @Column(nullable = false)
-    private Long quantity;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
-
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private CustomerOrderStatus status = CustomerOrderStatus.QUEUE;
+    private CustomerOrderStatus status = CustomerOrderStatus.PREPARING;
 }

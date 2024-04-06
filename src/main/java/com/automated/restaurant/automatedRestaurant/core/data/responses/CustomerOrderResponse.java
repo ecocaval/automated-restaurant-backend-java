@@ -7,22 +7,29 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 public class CustomerOrderResponse {
 
-    private Long quantity;
+    private CustomerResponse customer;
 
-    private ProductResponse product;
+    private List<ProductOrderResponse> productOrders;
 
     private CustomerOrderStatus status;
 
-    public static CustomerOrderResponse fromOrder(CustomerOrder customerOrder) {
+    public static CustomerOrderResponse fromCustomerOrder(CustomerOrder customerOrder) {
         return CustomerOrderResponse.builder()
-                .quantity(customerOrder.getQuantity())
-                .product(ProductResponse.fromProduct(customerOrder.getProduct()))
+                .customer(CustomerResponse.fromCustomer(customerOrder.getCustomer()))
+                .productOrders(
+                    customerOrder.getProductOrders() != null ?
+                        customerOrder.getProductOrders().stream().map(ProductOrderResponse::fromProductOrder).toList() :
+                        new ArrayList<>()
+                )
                 .status(customerOrder.getStatus())
                 .build();
     }

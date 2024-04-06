@@ -20,31 +20,26 @@ public class BillResponse {
 
     private boolean active;
 
-    private List<CustomerOrdersResponse> customerOrders;
+    private List<CustomerOrderResponse> customerOrders;
+
+    private List<CustomerResponse> customers;
 
     private RestaurantTableResponse restaurantTable;
 
     public static BillResponse fromBill(Bill bill) {
 
-        List<CustomerOrdersResponse> customerOrders = new ArrayList<>();
+        List<CustomerOrderResponse> customerOrders = null;
 
-        bill.getCustomers().forEach(customer -> {
-            customerOrders.add(
-                    CustomerOrdersResponse.builder()
-                            .customer(CustomerResponse.fromCustomer(customer))
-                            .orders(bill.getCustomerOrders().stream()
-                                    .filter(customerOrder -> customerOrder.getCustomer().getId().equals(customer.getId()))
-                                    .map(CustomerOrderResponse::fromOrder)
-                                    .toList())
-                            .build()
-            );
-        });
+        customerOrders = bill.getCustomerOrders() != null ?
+                bill.getCustomerOrders().stream().map(CustomerOrderResponse::fromCustomerOrder).toList() :
+                new ArrayList<>();
 
         return BillResponse.builder()
                 .id(bill.getId())
                 .active(bill.isActive())
                 .customerOrders(customerOrders)
                 .restaurantTable(RestaurantTableResponse.fromRestaurantTable(bill.getRestaurantTable()))
+                .customers(bill.getCustomers().stream().map(CustomerResponse::fromCustomer).toList())
                 .build();
     }
 }

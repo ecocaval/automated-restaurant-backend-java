@@ -1,10 +1,8 @@
 com/automated/restaurant/automatedRestaurant/presentation/entities/Customer$CustomerBuilder.class
 com/automated/restaurant/automatedRestaurant/core/validations/CellPhoneValidator.class
 com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/CepUseCaseImpl.class
-com/automated/restaurant/automatedRestaurant/presentation/entities/RestaurantImage$RestaurantImageBuilder.class
 com/automated/restaurant/automatedRestaurant/core/data/requests/CreateCustomerRequest.class
 com/automated/restaurant/automatedRestaurant/presentation/repositories/JobTitleRepository.class
-com/automated/restaurant/automatedRestaurant/presentation/entities/ProductImage.class
 com/automated/restaurant/automatedRestaurant/core/data/responses/RestaurantResponse$RestaurantResponseBuilder.class
 com/automated/restaurant/automatedRestaurant/core/data/requests/CreateProductRequest.class
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/JobTitleNotFoundException.class
@@ -16,7 +14,6 @@ com/automated/restaurant/automatedRestaurant/core/data/enums/RestaurantBillActio
 com/automated/restaurant/automatedRestaurant/core/data/responses/JobTitleResponse.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/ImageEntity$ImageEntityBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/usecases/RestaurantTableUseCase.class
-com/automated/restaurant/automatedRestaurant/presentation/repositories/ProductImageRepository.class
 com/automated/restaurant/automatedRestaurant/core/validations/AreaCode.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/CustomerOrder.class
 com/automated/restaurant/automatedRestaurant/core/utils/WebSocketUtils.class
@@ -24,8 +21,6 @@ com/automated/restaurant/automatedRestaurant/core/validations/CellPhone.class
 com/automated/restaurant/automatedRestaurant/core/data/responses/AddressResponse$AddressResponseBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/handler/ApiExceptionHandler.class
 com/automated/restaurant/automatedRestaurant/presentation/controllers/CustomerController.class
-com/automated/restaurant/automatedRestaurant/core/data/responses/CustomerOrderResponse.class
-com/automated/restaurant/automatedRestaurant/presentation/entities/RestaurantImage.class
 com/automated/restaurant/automatedRestaurant/presentation/controllers/CepController.class
 com/automated/restaurant/automatedRestaurant/core/data/responses/JobTitleResponse$JobTitleResponseBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/RestaurantQueue.class
@@ -33,7 +28,6 @@ com/automated/restaurant/automatedRestaurant/core/data/dtos/CustomerRestaurantQu
 com/automated/restaurant/automatedRestaurant/core/data/requests/CreateRestaurantRequest.class
 com/automated/restaurant/automatedRestaurant/core/messages/ErrorMessages.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/ImageEntity.class
-com/automated/restaurant/automatedRestaurant/presentation/entities/ProductImage$ProductImageBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/usecases/CepUseCase.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/Product.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/RestaurantQueue$RestaurantQueueBuilder.class
@@ -67,17 +61,13 @@ com/automated/restaurant/automatedRestaurant/core/data/enums/RestaurantQueueActi
 com/automated/restaurant/automatedRestaurant/core/data/responses/RestaurantResponse.class
 com/automated/restaurant/automatedRestaurant/presentation/repositories/ProductRepository.class
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/ImageNotFoundException.class
-com/automated/restaurant/automatedRestaurant/presentation/entities/RestaurantImage$RestaurantImageBuilderImpl.class
 com/automated/restaurant/automatedRestaurant/core/data/dtos/CustomerOrderMessageDto.class
-com/automated/restaurant/automatedRestaurant/presentation/usecases/ImageStoreUseCase.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/Restaurant$RestaurantBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/CustomerOrder$CustomerOrderBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/controllers/BillController.class
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/ProductNotFoundException.class
 com/automated/restaurant/automatedRestaurant/presentation/repositories/RestaurantRepository.class
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/DuplicatedProductException.class
-com/automated/restaurant/automatedRestaurant/core/data/responses/CustomerOrdersResponse.class
-com/automated/restaurant/automatedRestaurant/core/data/responses/CustomerOrderResponse$CustomerOrderResponseBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/RestaurantTableUseCaseImpl.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/Bill$BillBuilderImpl.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/RestaurantTable.class
@@ -89,7 +79,6 @@ com/automated/restaurant/automatedRestaurant/core/data/requests/UpdateCustomerRe
 com/automated/restaurant/automatedRestaurant/presentation/entities/ImageEntity$ImageEntityBuilderImpl.class
 com/automated/restaurant/automatedRestaurant/presentation/repositories/AddressRepository.class
 com/automated/restaurant/automatedRestaurant/core/data/responses/RestaurantTableResponse.class
-com/automated/restaurant/automatedRestaurant/presentation/entities/ProductImage$ProductImageBuilderImpl.class
 com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/ProductUseCaseImpl.class
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/ImageStoringException.class
 com/automated/restaurant/automatedRestaurant/core/data/enums/FileTypes.class
@@ -110,7 +99,6 @@ com/automated/restaurant/automatedRestaurant/AutomatedRestaurantApplication.clas
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/base/BaseException.class
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/ProductConflictException.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/JobTitle$JobTitleBuilderImpl.class
-com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/ImageStoreUseCaseImpl.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/BaseEntity$BaseEntityBuilder.class
 com/automated/restaurant/automatedRestaurant/core/utils/ImageUtils.class
 com/automated/restaurant/automatedRestaurant/presentation/controllers/RestaurantController.class
@@ -124,7 +112,6 @@ com/automated/restaurant/automatedRestaurant/core/data/requests/UpdateTableReque
 com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/JobTitleUseCaseImpl.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/Address$AddressBuilderImpl.class
 com/automated/restaurant/automatedRestaurant/core/data/requests/CreateJobTitleRequest.class
-com/automated/restaurant/automatedRestaurant/core/data/responses/CustomerOrdersResponse$CustomerOrdersResponseBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/CustomerUseCaseImpl.class
 com/automated/restaurant/automatedRestaurant/core/data/dtos/CustomerRestaurantQueueMessageDto.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/Restaurant.class
@@ -132,7 +119,6 @@ com/automated/restaurant/automatedRestaurant/presentation/usecases/ProductUseCas
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/handler/ApiExceptionResponse$ApiExceptionResponseBuilder.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/BaseEntity.class
 com/automated/restaurant/automatedRestaurant/core/data/responses/ProductResponse.class
-com/automated/restaurant/automatedRestaurant/presentation/repositories/RestaurantImageRepository.class
 com/automated/restaurant/automatedRestaurant/presentation/repositories/CustomerRepository.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/Collaborator$CollaboratorBuilder.class
 com/automated/restaurant/automatedRestaurant/core/messages/JobTitlePermission.class

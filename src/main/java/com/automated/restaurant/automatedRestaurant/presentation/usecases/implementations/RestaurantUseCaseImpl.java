@@ -6,7 +6,6 @@ import com.automated.restaurant.automatedRestaurant.presentation.entities.Restau
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.*;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantTableRepository;
-import com.automated.restaurant.automatedRestaurant.presentation.usecases.ImageStoreUseCase;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.RestaurantUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,6 @@ public class RestaurantUseCaseImpl implements RestaurantUseCase {
 
     @Autowired
     private RestaurantTableRepository restaurantTableRepository;
-
-    @Autowired
-    private ImageStoreUseCase imageStoreUseCase;
 
     @Override
     public Restaurant findById(UUID id) {

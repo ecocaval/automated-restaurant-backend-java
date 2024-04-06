@@ -1,6 +1,7 @@
 package com.automated.restaurant.automatedRestaurant.core.data.requests;
 
 import com.automated.restaurant.automatedRestaurant.core.data.enums.CustomerOrderStatus;
+import com.automated.restaurant.automatedRestaurant.core.data.enums.ProductOrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,18 +18,34 @@ public class UpdateCustomerOrdersRequest {
     @NotNull(message = "O id do cliente ao fazer o pedido não pode ser nulo.")
     private UUID customerId;
 
-    private List<OrderInformation> orderInformation;
+    private List<CustomerOrderInformation> customerOrderInformation;
+
+    private List<ProductOrderInformation> productOrderInformation;
 
     @NoArgsConstructor
     @AllArgsConstructor
     @Data
-    public static class OrderInformation {
+    public static class CustomerOrderInformation {
 
-        @NotNull(message = "O id do produto ao fazer o pedido não pode ser nulo.")
-        private UUID orderId;
-
-        private Long quantity;
+        @NotNull(message = "O id do pedido não ser nulo.")
+        private UUID customerOrderId;
 
         private CustomerOrderStatus status;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class ProductOrderInformation {
+
+        @NotNull(message = "O id do pedido não ser nulo.")
+        private UUID customerOrderId;
+
+        @NotNull(message = "O id do item do pedido não ser nulo.")
+        private UUID productOrderId;
+
+        private ProductOrderStatus status;
+
+        private Long quantity;
     }
 }

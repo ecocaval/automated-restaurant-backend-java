@@ -3,13 +3,11 @@ package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.*;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.*;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
-import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantImage;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -33,7 +31,7 @@ public class RestaurantController {
     private JobTitleUseCase jobTitleUseCase;
 
     @Autowired
-    private ImageStoreUseCase imageStoreUseCase;
+    private CustomerOrderUseCase customerOrderUseCase;
 
     @GetMapping("/{restaurantId}")
     public ResponseEntity<RestaurantResponse> findById(
@@ -78,18 +76,6 @@ public class RestaurantController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 RestaurantResponse.fromRestaurant(
                         this.restaurantUseCase.update(request, restaurant)
-                )
-        );
-    }
-
-    @PostMapping("/{restaurantId}/image")
-    public ResponseEntity<RestaurantImage> uploadRestaurantImage(
-            @PathVariable("restaurantId") UUID restaurantId,
-            @RequestParam("image") MultipartFile imageFile
-    ) {
-        return ResponseEntity.ok(
-                this.imageStoreUseCase.uploadRestaurantImage(
-                        imageFile, this.restaurantUseCase.findById(restaurantId)
                 )
         );
     }
@@ -209,18 +195,6 @@ public class RestaurantController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/product/{productId}/image")
-    public ResponseEntity<?> uploadProductImage(
-            @PathVariable("productId") UUID productId,
-            @RequestParam("image") MultipartFile imageFile
-    ) {
-        this.imageStoreUseCase.uploadProductImage(
-                imageFile, this.productUseCase.findById(productId)
-        );
-
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/job-title/{jobTitleId}")
     public ResponseEntity<JobTitleResponse> findJobTitleById(
             @PathVariable("jobTitleId") UUID jobTitleId
@@ -277,5 +251,20 @@ public class RestaurantController {
 
         return ResponseEntity.ok().build();
     }
+
+//    @GetMapping("{restaurantId}/orders")
+//    private ResponseEntity<List<ProductOrderResponse>> getAllOrderFromActiveBills(
+//            @PathVariable("restaurantId") UUID restaurantId,
+//            @RequestParam(value = "status", required = false) ProductOrderStatus status
+//    ) {
+//        this.restaurantUseCase.findById(restaurantId);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                this.customerOrderUseCase.getAllOrderFromActiveBills(restaurantId, status)
+//                        .stream()
+//                        .map(ProductOrderResponse::fromProductOrder)
+//                        .toList()
+//        );
+//    }
 
 }

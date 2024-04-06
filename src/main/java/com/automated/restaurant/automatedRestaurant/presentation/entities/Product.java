@@ -37,9 +37,6 @@ public class Product extends BaseEntity {
     @Builder.Default
     private Long sku = (long) Math.floor(1_000_000 * Math.random());
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
-    private List<ProductImage> images;
-
     @Column(nullable = false)
     private String description;
 

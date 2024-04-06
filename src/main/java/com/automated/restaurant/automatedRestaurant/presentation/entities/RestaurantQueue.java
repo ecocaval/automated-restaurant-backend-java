@@ -1,10 +1,8 @@
 package com.automated.restaurant.automatedRestaurant.presentation.entities;
 
-import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateProductRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;

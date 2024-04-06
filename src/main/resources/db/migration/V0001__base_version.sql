@@ -66,7 +66,8 @@ CREATE TABLE customer_order (
    deleted BOOLEAN DEFAULT FALSE NOT NULL,
    customer_id UUID NOT NULL,
    bill_id UUID NOT NULL,
-   CONSTRAINT pk_customerorder PRIMARY KEY (id)
+   status VARCHAR(255),
+   CONSTRAINT pk_customer_order PRIMARY KEY (id)
 );
 
 CREATE TABLE job_title (
@@ -95,25 +96,16 @@ CREATE TABLE product (
    CONSTRAINT pk_product PRIMARY KEY (id)
 );
 
-CREATE TABLE product_image (
+CREATE TABLE product_order (
   id UUID NOT NULL,
    creation_date TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
    last_modified_date TIMESTAMP WITHOUT TIME ZONE,
    deleted BOOLEAN DEFAULT FALSE NOT NULL,
-   product_id UUID NOT NULL,
-   priority BIGINT NOT NULL,
-   CONSTRAINT pk_productimage PRIMARY KEY (id)
-);
-
-CREATE TABLE product_order_info (
-  id UUID NOT NULL,
-   creation_date TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
-   last_modified_date TIMESTAMP WITHOUT TIME ZONE,
-   deleted BOOLEAN DEFAULT FALSE NOT NULL,
+   customer_order_id UUID NOT NULL,
    quantity BIGINT NOT NULL,
    product_id UUID NOT NULL,
-   customer_order_id UUID NOT NULL,
-   CONSTRAINT pk_productorderinfo PRIMARY KEY (id)
+   status VARCHAR(255),
+   CONSTRAINT pk_productorder PRIMARY KEY (id)
 );
 
 CREATE TABLE restaurant (
@@ -125,17 +117,6 @@ CREATE TABLE restaurant (
    name VARCHAR(255) NOT NULL,
    restaurant_queue_id UUID,
    CONSTRAINT pk_restaurant PRIMARY KEY (id)
-);
-
-CREATE TABLE restaurant_image (
-  id UUID NOT NULL,
-   creation_date TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
-   last_modified_date TIMESTAMP WITHOUT TIME ZONE,
-   deleted BOOLEAN DEFAULT FALSE NOT NULL,
-   restaurant_id UUID NOT NULL,
-   is_logo BOOLEAN NOT NULL,
-   priority BIGINT,
-   CONSTRAINT pk_restaurantimage PRIMARY KEY (id)
 );
 
 CREATE TABLE restaurant_queue (
@@ -152,7 +133,7 @@ CREATE TABLE restaurant_table (
    creation_date TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
    last_modified_date TIMESTAMP WITHOUT TIME ZONE,
    deleted BOOLEAN DEFAULT FALSE NOT NULL,
-   active BOOLEAN DEFAULT TRUE NOT NULL,
+   is_calling_waiter BOOLEAN DEFAULT FALSE NOT NULL,
    identification VARCHAR(255) NOT NULL,
    capacity BIGINT NOT NULL,
    status VARCHAR(255) NOT NULL,
@@ -166,15 +147,11 @@ ALTER TABLE restaurant_table ADD CONSTRAINT FK_RESTAURANTTABLE_ON_RESTAURANT FOR
 
 ALTER TABLE restaurant_queue ADD CONSTRAINT FK_RESTAURANTQUEUE_ON_RESTAURANT FOREIGN KEY (restaurant_id) REFERENCES restaurant (id);
 
-ALTER TABLE restaurant_image ADD CONSTRAINT FK_RESTAURANTIMAGE_ON_RESTAURANT FOREIGN KEY (restaurant_id) REFERENCES restaurant (id);
-
 ALTER TABLE restaurant ADD CONSTRAINT FK_RESTAURANT_ON_RESTAURANT_QUEUE FOREIGN KEY (restaurant_queue_id) REFERENCES restaurant_queue (id);
 
-ALTER TABLE product_order_info ADD CONSTRAINT FK_PRODUCTORDERINFO_ON_CUSTOMER_ORDER FOREIGN KEY (customer_order_id) REFERENCES customer_order (id);
+ALTER TABLE product_order ADD CONSTRAINT FK_PRODUCTORDER_ON_CUSTOMER_ORDER FOREIGN KEY (customer_order_id) REFERENCES customer_order (id);
 
-ALTER TABLE product_order_info ADD CONSTRAINT FK_PRODUCTORDERINFO_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES product (id);
-
-ALTER TABLE product_image ADD CONSTRAINT FK_PRODUCTIMAGE_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES product (id);
+ALTER TABLE product_order ADD CONSTRAINT FK_PRODUCTORDER_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES product (id);
 
 ALTER TABLE product ADD CONSTRAINT FK_PRODUCT_ON_RESTAURANT FOREIGN KEY (restaurant_id) REFERENCES restaurant (id);
 
@@ -182,9 +159,9 @@ ALTER TABLE job_title ADD CONSTRAINT uc_9ef3e73ffc36dc52bc97ca80b UNIQUE (name, 
 
 ALTER TABLE job_title ADD CONSTRAINT FK_JOBTITLE_ON_RESTAURANT FOREIGN KEY (restaurant_id) REFERENCES restaurant (id);
 
-ALTER TABLE customer_order ADD CONSTRAINT FK_CUSTOMERORDER_ON_BILL FOREIGN KEY (bill_id) REFERENCES bill (id);
+ALTER TABLE customer_order ADD CONSTRAINT FK_CUSTOMER_ORDER_ON_BILL FOREIGN KEY (bill_id) REFERENCES bill (id);
 
-ALTER TABLE customer_order ADD CONSTRAINT FK_CUSTOMERORDER_ON_CUSTOMER FOREIGN KEY (customer_id) REFERENCES customer (id);
+ALTER TABLE customer_order ADD CONSTRAINT FK_CUSTOMER_ORDER_ON_CUSTOMER FOREIGN KEY (customer_id) REFERENCES customer (id);
 
 ALTER TABLE customer ADD CONSTRAINT FK_CUSTOMER_ON_RESTAURANT_QUEUE FOREIGN KEY (restaurant_queue_id) REFERENCES restaurant_queue (id);
 
@@ -203,4 +180,3 @@ ALTER TABLE customer_bill ADD CONSTRAINT fk_cusbil_on_bill FOREIGN KEY (bill_id)
 ALTER TABLE customer_bill ADD CONSTRAINT fk_cusbil_on_customer FOREIGN KEY (customer_id) REFERENCES customer (id);
 
 ALTER TABLE address ADD CONSTRAINT FK_ADDRESS_ON_RESTAURANT FOREIGN KEY (restaurant_id) REFERENCES restaurant (id);
-
