@@ -230,26 +230,21 @@ public class BillUseCaseImpl implements BillUseCase {
     @Override
     public Bill updateOrders(UpdateCustomerOrdersRequest request, UUID billId) {
 
-        CompletableFuture<Customer> customerFuture = AsyncUtils.getCompletableFuture(this.customerUseCase.findById(request.getCustomerId()));
-
         CompletableFuture<Bill> billFuture = AsyncUtils.getCompletableFuture(this.findById(billId));
 
         AsyncUtils.completeFutures(
-                customerFuture,
                 billFuture
         );
 
-        Customer customer = null;
         Bill bill = null;
 
         try {
-            customer = customerFuture.get();
             bill = billFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
         }
 
-        if (customer == null || bill == null) {
+        if (bill == null) {
             throw new RuntimeException(); //FIXME
         }
 

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,14 +17,17 @@ import java.util.List;
 @Data
 public class CustomerOrderResponse {
 
-    private CustomerResponse customer;
+    private UUID id;
 
-    private List<ProductOrderResponse> productOrders;
+    private CustomerResponse customer;
 
     private CustomerOrderStatus status;
 
+    private List<ProductOrderResponse> productOrders;
+
     public static CustomerOrderResponse fromCustomerOrder(CustomerOrder customerOrder) {
         return CustomerOrderResponse.builder()
+                .id(customerOrder.getId())
                 .customer(CustomerResponse.fromCustomer(customerOrder.getCustomer()))
                 .productOrders(
                     customerOrder.getProductOrders() != null ?

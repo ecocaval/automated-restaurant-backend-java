@@ -17,6 +17,8 @@ public class ProductOrderResponse {
 
     private UUID id;
 
+    private UUID customerOrderId;
+
     private Long quantity;
 
     private ProductResponse product;
@@ -26,6 +28,7 @@ public class ProductOrderResponse {
     public static ProductOrderResponse fromProductOrder(ProductOrder productOrder) {
         return ProductOrderResponse.builder()
                 .id(productOrder.getId())
+                .customerOrderId(productOrder.getCustomerOrder().getId())
                 .quantity(productOrder.getQuantity())
                 .product(ProductResponse.fromProduct(productOrder.getProduct()))
                 .status(productOrder.getStatus())

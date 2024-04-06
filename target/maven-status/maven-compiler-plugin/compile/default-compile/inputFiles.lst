@@ -55,7 +55,6 @@
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/responses/ProductResponse.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/responses/JobTitleResponse.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/BillUseCaseImpl.java
-/home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/CustomerOrderUseCaseImpl.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/requests/PlaceCustomerOrdersRequest.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/RestaurantTableUseCaseImpl.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/exceptions/base/BaseException.java
@@ -91,12 +90,12 @@
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/utils/ImageUtils.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/enums/ProductOrderStatus.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/exceptions/CepNotFoundException.java
+/home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/OrderUseCaseImpl.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/configs/WebSocketConfiguration.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/exceptions/JobTitleNotFoundException.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/repositories/AdminRepository.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/dtos/RestaurantBillMessageDto.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/exceptions/ProductConflictException.java
-/home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/usecases/CustomerOrderUseCase.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/entities/BaseEntity.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/dtos/CustomerOrderMessageDto.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/requests/CreateTableRequest.java
@@ -111,4 +110,5 @@
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/usecases/RestaurantUseCase.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/requests/UpdateJobTitleRequest.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/core/data/requests/CreateCustomerRequest.java
+/home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/usecases/OrderUseCase.java
 /home/ecocaval/automated-restaurant/automated-restaurant-backend-java/src/main/java/com/automated/restaurant/automatedRestaurant/presentation/exceptions/CustomerConflictException.java

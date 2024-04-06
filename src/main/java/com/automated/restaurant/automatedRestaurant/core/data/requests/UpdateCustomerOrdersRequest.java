@@ -15,9 +15,6 @@ import java.util.UUID;
 @Data
 public class UpdateCustomerOrdersRequest {
 
-    @NotNull(message = "O id do cliente ao fazer o pedido não pode ser nulo.")
-    private UUID customerId;
-
     private List<CustomerOrderInformation> customerOrderInformation;
 
     private List<ProductOrderInformation> productOrderInformation;

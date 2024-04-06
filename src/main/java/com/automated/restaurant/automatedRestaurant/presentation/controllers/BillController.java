@@ -1,8 +1,10 @@
 package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 
+import com.automated.restaurant.automatedRestaurant.core.data.enums.CustomerOrderStatus;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceCustomerOrdersRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerOrdersRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
+import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrderResponse;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Bill;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class BillController {
 
     @Autowired
     private BillUseCase billUseCase;
+
+    @Autowired
+    private OrderUseCase orderUseCase;
 
     @Autowired
     private ProductUseCase productUseCase;
@@ -67,6 +72,21 @@ public class BillController {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 BillResponse.fromBill(this.billUseCase.findById(billId))
+        );
+    }
+
+    @GetMapping("/orders/restaurant/{restaurantId}")
+    private ResponseEntity<List<CustomerOrderResponse>> getActiveOrdersInRestaurant(
+            @PathVariable("restaurantId") UUID restaurantId,
+            @RequestParam(value = "customerOrderStatus", required = false) CustomerOrderStatus customerOrderStatus
+    ) {
+        this.restaurantUseCase.findById(restaurantId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                this.orderUseCase.findActiveOrdersByRestaurantId(restaurantId, customerOrderStatus)
+                        .stream()
+                        .map(CustomerOrderResponse::fromCustomerOrder)
+                        .toList()
         );
     }
 

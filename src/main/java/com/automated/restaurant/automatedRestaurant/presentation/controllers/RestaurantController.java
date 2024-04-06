@@ -30,9 +30,6 @@ public class RestaurantController {
     @Autowired
     private JobTitleUseCase jobTitleUseCase;
 
-    @Autowired
-    private CustomerOrderUseCase customerOrderUseCase;
-
     @GetMapping("/{restaurantId}")
     public ResponseEntity<RestaurantResponse> findById(
             @PathVariable("restaurantId") UUID restaurantId
@@ -251,20 +248,5 @@ public class RestaurantController {
 
         return ResponseEntity.ok().build();
     }
-
-//    @GetMapping("{restaurantId}/orders")
-//    private ResponseEntity<List<ProductOrderResponse>> getAllOrderFromActiveBills(
-//            @PathVariable("restaurantId") UUID restaurantId,
-//            @RequestParam(value = "status", required = false) ProductOrderStatus status
-//    ) {
-//        this.restaurantUseCase.findById(restaurantId);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(
-//                this.customerOrderUseCase.getAllOrderFromActiveBills(restaurantId, status)
-//                        .stream()
-//                        .map(ProductOrderResponse::fromProductOrder)
-//                        .toList()
-//        );
-//    }
 
 }
