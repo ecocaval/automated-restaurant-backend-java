@@ -21,6 +21,11 @@ public class JobTitleResponse {
     private String name;
 
     public static JobTitleResponse fromJobTitle(JobTitle jobTitle) {
+
+        if(jobTitle == null) {
+            return null;
+        }
+
         return JobTitleResponse.builder()
                 .id(jobTitle.getId())
                 .restaurantId(jobTitle.getRestaurant().getId())

@@ -36,7 +36,7 @@ CREATE TABLE collaborator (
    last_modified_date TIMESTAMP WITHOUT TIME ZONE,
    deleted BOOLEAN DEFAULT FALSE NOT NULL,
    name VARCHAR(255) NOT NULL,
-   job_title_id UUID NOT NULL,
+   job_title_id UUID,
    restaurant_id UUID NOT NULL,
    CONSTRAINT pk_collaborator PRIMARY KEY (id)
 );

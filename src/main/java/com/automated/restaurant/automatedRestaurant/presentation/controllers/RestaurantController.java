@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,9 +26,6 @@ public class RestaurantController {
 
     @Autowired
     private ProductUseCase productUseCase;
-
-    @Autowired
-    private JobTitleUseCase jobTitleUseCase;
 
     @GetMapping("/{restaurantId}")
     public ResponseEntity<RestaurantResponse> findById(
@@ -191,62 +188,4 @@ public class RestaurantController {
 
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/job-title/{jobTitleId}")
-    public ResponseEntity<JobTitleResponse> findJobTitleById(
-            @PathVariable("jobTitleId") UUID jobTitleId
-    ) {
-        return ResponseEntity.ok(
-                JobTitleResponse.fromJobTitle(this.jobTitleUseCase.findById(jobTitleId))
-        );
-    }
-
-    @GetMapping("/{restaurantId}/job-titles")
-    public ResponseEntity<List<JobTitleResponse>> findAllJobTitlesByRestaurantId(
-            @PathVariable("restaurantId") UUID restaurantId
-    ) {
-        return ResponseEntity.ok(
-                RestaurantResponse.fromRestaurant(this.restaurantUseCase.findById(restaurantId)).getJobTitles()
-        );
-    }
-
-    @PostMapping("/{restaurantId}/job-titles")
-    public ResponseEntity<List<JobTitleResponse>> createJobTitles(
-            @PathVariable("restaurantId") UUID restaurantId,
-            @RequestBody @Valid List<CreateJobTitleRequest> requests
-    ) {
-        Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                this.jobTitleUseCase.createAll(requests, restaurant)
-                        .stream()
-                        .map(JobTitleResponse::fromJobTitle)
-                        .toList()
-        );
-    }
-
-    @PatchMapping("/{restaurantId}/job-titles")
-    public ResponseEntity<List<JobTitleResponse>> updateJobTitles(
-            @PathVariable("restaurantId") UUID restaurantId,
-            @RequestBody @Valid List<UpdateJobTitleRequest> requests
-    ) {
-        Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(
-                this.jobTitleUseCase.updateAll(requests, restaurant)
-                        .stream()
-                        .map(JobTitleResponse::fromJobTitle)
-                        .toList()
-        );
-    }
-
-    @DeleteMapping("/job-titles/{jobTitleIds}")
-    public ResponseEntity<?> deleteJobTitles(
-            @PathVariable("{jobTitleIds}") List<UUID> jobTitleIds
-    ) {
-        this.jobTitleUseCase.deleteAll(jobTitleIds);
-
-        return ResponseEntity.ok().build();
-    }
-
 }

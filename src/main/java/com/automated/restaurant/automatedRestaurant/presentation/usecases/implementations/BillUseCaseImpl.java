@@ -14,6 +14,8 @@ import com.automated.restaurant.automatedRestaurant.core.data.responses.Restaura
 import com.automated.restaurant.automatedRestaurant.core.utils.AsyncUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.BilltNotFoundException;
+import com.automated.restaurant.automatedRestaurant.presentation.exceptions.CustomerOrderNotFound;
+import com.automated.restaurant.automatedRestaurant.presentation.exceptions.ProductOrderNotFound;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.*;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import jakarta.transaction.Transactional;
@@ -254,46 +256,68 @@ public class BillUseCaseImpl implements BillUseCase {
 
         List<CustomerOrder> customerOrdersToUpdate = new ArrayList<>();
 
-        request.getCustomerOrderInformation().forEach(customerOrderInformation -> {
+        if(request.getCustomerOrderInformation() != null && !request.getCustomerOrderInformation().isEmpty()) {
 
-            CustomerOrder currentOrder = finalBill.getCustomerOrders().stream().filter(customerOrder ->
-                    customerOrderInformation.getCustomerOrderId().equals(customerOrder.getId())
-            ).toList().get(0);
+            request.getCustomerOrderInformation().forEach(customerOrderInformation -> {
 
-            Optional.ofNullable(customerOrderInformation.getStatus()).ifPresent(currentOrder::setStatus);
+                CustomerOrder currentOrder = null;
 
-            customerOrdersToUpdate.add(currentOrder);
+                try {
+                    currentOrder = finalBill.getCustomerOrders().stream().filter(customerOrder ->
+                            customerOrderInformation.getCustomerOrderId().equals(customerOrder.getId())
+                    ).findFirst().get();
+                } catch (NoSuchElementException ex) {
+                    throw new CustomerOrderNotFound(customerOrderInformation.getCustomerOrderId());
+                }
 
-            customerOrdersChangedIds.add(currentOrder.getId());
-        });
+                Optional.ofNullable(customerOrderInformation.getStatus()).ifPresent(currentOrder::setStatus);
 
-        this.customerOrderRepository.saveAll(customerOrdersToUpdate);
+                customerOrdersToUpdate.add(currentOrder);
+
+                customerOrdersChangedIds.add(currentOrder.getId());
+            });
+
+            this.customerOrderRepository.saveAll(customerOrdersToUpdate);
+        }
 
         List<ProductOrder> productOrdersToUpdate = new ArrayList<>();
 
-        request.getProductOrderInformation().forEach(productOrderInformation -> {
+        if(request.getProductOrderInformation() != null && !request.getProductOrderInformation().isEmpty()) {
 
-            ProductOrder productOrder = finalBill.getCustomerOrders()
-                    .stream()
-                    .filter(customerOrder -> productOrderInformation.getCustomerOrderId().equals(customerOrder.getId()))
-                    .findFirst()
-                    .get()
-                    .getProductOrders()
-                    .stream()
-                    .filter(productOrderInfo -> productOrderInformation.getProductOrderId().equals(productOrderInfo.getId()))
-                    .findFirst()
-                    .get();
+            request.getProductOrderInformation().forEach(productOrderInformation -> {
 
-            Optional.ofNullable(productOrderInformation.getStatus()).ifPresent(productOrder::setStatus);
+                ProductOrder productOrder = null;
 
-            Optional.ofNullable(productOrderInformation.getQuantity()).ifPresent(productOrder::setQuantity);
+                try {
+                    productOrder = finalBill.getCustomerOrders()
+                            .stream()
+                            .filter(customerOrder -> productOrderInformation.getCustomerOrderId().equals(customerOrder.getId()))
+                            .findFirst()
+                            .get()
+                            .getProductOrders()
+                            .stream()
+                            .filter(productOrderInfo -> productOrderInformation.getProductOrderId().equals(productOrderInfo.getId()))
+                            .findFirst()
+                            .get();
 
-            productOrdersToUpdate.add(productOrder);
+                } catch (NoSuchElementException exception) {
+                    throw new ProductOrderNotFound(
+                            productOrderInformation.getCustomerOrderId(),
+                            productOrderInformation.getProductOrderId()
+                    );
+                }
 
-            customerOrdersChangedIds.add(productOrder.getCustomerOrder().getId());
-        });
+                Optional.ofNullable(productOrderInformation.getStatus()).ifPresent(productOrder::setStatus);
 
-        this.productOrderRepository.saveAll(productOrdersToUpdate);
+                Optional.ofNullable(productOrderInformation.getQuantity()).ifPresent(productOrder::setQuantity);
+
+                productOrdersToUpdate.add(productOrder);
+
+                customerOrdersChangedIds.add(productOrder.getCustomerOrder().getId());
+            });
+
+            this.productOrderRepository.saveAll(productOrdersToUpdate);
+        }
 
         var persistedBill = this.findById(billId);
 

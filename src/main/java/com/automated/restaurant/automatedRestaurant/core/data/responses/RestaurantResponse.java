@@ -31,10 +31,10 @@ public class RestaurantResponse {
         return RestaurantResponse.builder()
                 .id(restaurant.getId())
                 .name(restaurant.getName())
-                .products(restaurant.getProducts() != null ? restaurant.getProducts().stream().map(ProductResponse::fromProduct).toList() : null)
-                .jobTitles(restaurant.getJobTitles() != null ? restaurant.getJobTitles().stream().map(JobTitleResponse::fromJobTitle).toList() : null)
-                .collaborators(restaurant.getCollaborators() != null ? restaurant.getCollaborators().stream().map(CollaboratorResponse::fromCollaborator).toList() : null)
-                .tables(restaurant.getRestaurantTables() != null ? restaurant.getRestaurantTables().stream().map(RestaurantTableResponse::fromRestaurantTable).toList() : null)
+                .products(restaurant.getProducts() != null ? restaurant.getProducts().stream().map(ProductResponse::fromProduct).toList() : List.of())
+                .jobTitles(restaurant.getJobTitles() != null ? restaurant.getJobTitles().stream().map(JobTitleResponse::fromJobTitle).toList() : List.of())
+                .collaborators(restaurant.getCollaborators() != null ? restaurant.getCollaborators().stream().map(CollaboratorResponse::fromCollaborator).toList() : List.of())
+                .tables(restaurant.getRestaurantTables() != null ? restaurant.getRestaurantTables().stream().map(RestaurantTableResponse::fromRestaurantTable).toList() : List.of())
                 .build();
     }
 }

@@ -9,6 +9,13 @@ public enum ErrorMessages {
 
     ERROR_RESTAURANT_NOT_FOUND_BY_ID("O restaurante com este id não foi encontrado."),
     ERROR_BILL_NOT_FOUND_BY_ID("A conta com este id não foi encontrada."),
+    ERROR_COMBINATION_OF_CUSTOMER_AND_PRODUCT_ORDER_NOT_FOUND_BY_ID("O item do pedido com esta combinação de ids não econtrado."),
+    ERROR_COLLABORATOR_NAME_IS_NULL_ON_CREATE_REQUEST("O nome do colaborador é obrigatório no cadastro."),
+    ERROR_COLLABORATOR_PASSWORD_IS_NULL_ON_CREATE_REQUEST("A senha do colaborador é obrigatória no cadastro."),
+    ERROR_INVALID_CPF("O cpf fornecido é invalido."),
+    ERROR_INVALID_EMAIL("O email fornecido é invalido."),
+    ERROR_CUSTOMER_ORDER_NOT_FOUND_BY_ID("O pedido com este id não foi encontrado."),
+    ERROR_COLLABORATOR_NOT_FOUND_BY_ID("O colaborador com este id não foi encontrado."),
     ERROR_IMAGE_NOT_FOUND_BY_ID("A imagem com este id não foi encontrada."),
     ERROR_CUSTOMER_NOT_FOUND_BY_ID("O client com este id não foi encontrado."),
     ERROR_ON_IMAGE_STORE("Houve um problema ao tentar salvar a imagem, verifique a extensão e integridade do arquivo e tente novamente."),
@@ -25,6 +32,7 @@ public enum ErrorMessages {
     ERROR_RESTAURANT_PRODUCT_CONFLICT("O produto do restaurante com este nome, sku e tamanho de porção já existe."),
     ERROR_CUSTOMER_CONFLICT_BY_EMAIL("O cliente com este email já existe."),
     ERROR_ADDRESS_NOT_FOUND_FOR_ZIP_CODE("Não encontramos um endereço para o cep fornecido, verifique o valor e tente novamente."),
+    ERROR_NULL_COLLABORATOR_WHEN_CREATING_RESTAURANT("Ao menos um colaborador deve ser informado para criar o restaurante."),
     ERROR_EMAIL_OUT_OF_PATTERN("Por favor, insira um e-mail válido.");
 
     private final String message;

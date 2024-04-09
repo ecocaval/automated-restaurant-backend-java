@@ -15,5 +15,4 @@ public interface CustomerUseCase {
 
     Customer update(UpdateCustomerRequest request, Customer customer);
 
-
 }

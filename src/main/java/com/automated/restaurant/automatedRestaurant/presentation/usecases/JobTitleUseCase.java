@@ -1,6 +1,7 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases;
 
-import com.automated.restaurant.automatedRestaurant.core.data.requests.*;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateJobTitleRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateJobTitleRequest;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.JobTitle;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 

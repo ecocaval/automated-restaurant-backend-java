@@ -21,6 +21,10 @@ public class CustomerOrderResponse {
 
     private CustomerResponse customer;
 
+    private RestaurantTableResponse restaurantTable;
+
+    private UUID billId;
+
     private CustomerOrderStatus status;
 
     private List<ProductOrderResponse> productOrders;
@@ -29,6 +33,8 @@ public class CustomerOrderResponse {
         return CustomerOrderResponse.builder()
                 .id(customerOrder.getId())
                 .customer(CustomerResponse.fromCustomer(customerOrder.getCustomer()))
+                .restaurantTable(RestaurantTableResponse.fromRestaurantTable(customerOrder.getBill().getRestaurantTable()))
+                .billId(customerOrder.getBill().getId())
                 .productOrders(
                     customerOrder.getProductOrders() != null ?
                         customerOrder.getProductOrders().stream().map(ProductOrderResponse::fromProductOrder).toList() :

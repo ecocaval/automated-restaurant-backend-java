@@ -121,7 +121,6 @@ com/automated/restaurant/automatedRestaurant/presentation/entities/BaseEntity.cl
 com/automated/restaurant/automatedRestaurant/core/data/responses/ProductResponse.class
 com/automated/restaurant/automatedRestaurant/presentation/repositories/CustomerRepository.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/Collaborator$CollaboratorBuilder.class
-com/automated/restaurant/automatedRestaurant/core/messages/JobTitlePermission.class
 com/automated/restaurant/automatedRestaurant/core/data/requests/UpdateRestaurantRequest.class
 com/automated/restaurant/automatedRestaurant/presentation/usecases/CustomerUseCase.class
 com/automated/restaurant/automatedRestaurant/presentation/usecases/implementations/BillUseCaseImpl.class
