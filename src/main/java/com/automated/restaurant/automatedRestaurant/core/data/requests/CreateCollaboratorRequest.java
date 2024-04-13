@@ -26,8 +26,6 @@ public class CreateCollaboratorRequest {
     @Email
     private String email;
 
-    private Boolean isOwner;
-
     private Boolean isAdmin;
 
     private UUID jobTitleId;

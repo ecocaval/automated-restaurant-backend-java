@@ -25,7 +25,7 @@ public class CollaboratorController {
 
     @GetMapping("/{collaboratorId}")
     public ResponseEntity<CollaboratorResponse> findById(
-            @PathVariable("{collaboratorId}") UUID collaboratorId
+            @PathVariable("collaboratorId") UUID collaboratorId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 CollaboratorResponse.fromCollaborator(this.collaboratorUseCase.findById(collaboratorId))
@@ -34,7 +34,7 @@ public class CollaboratorController {
 
     @PatchMapping("/{collaboratorId}")
     public ResponseEntity<CollaboratorResponse> updateById(
-            @PathVariable("{collaboratorId}") UUID collaboratorId,
+            @PathVariable("collaboratorId") UUID collaboratorId,
             @RequestBody @Valid UpdateCollaboratorRequest request
     ) {
         var collaborator = this.collaboratorUseCase.findById(collaboratorId);
@@ -46,7 +46,7 @@ public class CollaboratorController {
 
     @GetMapping("/restaurant/{restaurantId}")
     public ResponseEntity<List<CollaboratorResponse>> findAllCollaboratorByRestaurantId(
-            @PathVariable("{restaurantId}") UUID restaurantId
+            @PathVariable("restaurantId") UUID restaurantId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 this.restaurantUseCase.findById(restaurantId).getCollaborators()
@@ -59,7 +59,7 @@ public class CollaboratorController {
     @PostMapping("/restaurant/{restaurantId}")
     public ResponseEntity<CollaboratorResponse> createCollaborator(
             @RequestBody @Valid CreateCollaboratorRequest request,
-            @PathVariable("{restaurantId}") UUID restaurantId
+            @PathVariable("restaurantId") UUID restaurantId
     ) {
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
@@ -70,7 +70,7 @@ public class CollaboratorController {
 
     @DeleteMapping("/{collaboratorIds}")
     public ResponseEntity<?> deleteAll(
-            @PathVariable("{collaboratorIds}") List<UUID> collaboratorIds
+            @PathVariable("collaboratorIds") List<UUID> collaboratorIds
     ) {
         this.collaboratorUseCase.deleteAll(collaboratorIds);
         return ResponseEntity.ok().build();

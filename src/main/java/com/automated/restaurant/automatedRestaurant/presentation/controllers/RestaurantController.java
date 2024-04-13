@@ -96,7 +96,7 @@ public class RestaurantController {
     @PostMapping("/{restaurantId}/tables")
     public ResponseEntity<List<RestaurantTableResponse>> createTables(
             @PathVariable("restaurantId") UUID restaurantId,
-            @RequestBody @Valid List<CreateTableRequest> requests
+            @RequestBody List<CreateTableRequest> requests
     ) {
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
@@ -111,7 +111,7 @@ public class RestaurantController {
     @PatchMapping("/{restaurantId}/tables")
     public ResponseEntity<List<RestaurantTableResponse>> updateTables(
             @PathVariable("restaurantId") UUID restaurantId,
-            @RequestBody @Valid List<UpdateTableRequest> requests
+            @RequestBody List<UpdateTableRequest> requests
     ) {
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
@@ -153,7 +153,7 @@ public class RestaurantController {
     @PostMapping("/{restaurantId}/products")
     public ResponseEntity<List<ProductResponse>> createProducts(
             @PathVariable("restaurantId") UUID restaurantId,
-            @RequestBody @Valid List<CreateProductRequest> requests
+            @RequestBody List<CreateProductRequest> requests
     ) {
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
@@ -168,7 +168,7 @@ public class RestaurantController {
     @PatchMapping("/{restaurantId}/products")
     public ResponseEntity<List<ProductResponse>> updateProducts(
             @PathVariable("restaurantId") UUID restaurantId,
-            @RequestBody @Valid List<UpdateProductRequest> requests
+            @RequestBody List<UpdateProductRequest> requests
     ) {
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 

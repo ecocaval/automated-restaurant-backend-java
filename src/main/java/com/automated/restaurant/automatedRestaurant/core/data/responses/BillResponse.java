@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,10 @@ import java.util.UUID;
 public class BillResponse {
 
     private UUID id;
+
+    private LocalDateTime creationDate;
+
+    private LocalDateTime lastModifiedDate;
 
     private boolean active;
 
@@ -36,6 +41,8 @@ public class BillResponse {
 
         return BillResponse.builder()
                 .id(bill.getId())
+                .creationDate(bill.getCreationDate())
+                .lastModifiedDate(bill.getLastModifiedDate())
                 .active(bill.isActive())
                 .customerOrders(customerOrders)
                 .restaurantTable(RestaurantTableResponse.fromRestaurantTable(bill.getRestaurantTable()))

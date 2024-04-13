@@ -12,7 +12,6 @@ import java.util.UUID;
 @Data
 public class UpdateProductRequest {
 
-    @NotNull(message = "O id do produto a ser atualizado não pode ser nulo.")
     private UUID id;
 
     private Boolean active;

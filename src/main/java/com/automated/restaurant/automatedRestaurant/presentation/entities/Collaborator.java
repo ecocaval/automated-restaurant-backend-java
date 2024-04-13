@@ -48,7 +48,7 @@ public class Collaborator extends BaseEntity {
 
     public static Collaborator fromCreateRequest(CreateCollaboratorRequest request, Restaurant restaurant) {
 
-        var isOwner = restaurant.getCollaborators() == null || (request.getIsOwner() != null ? request.getIsOwner() : Boolean.FALSE);
+        var isOwner = restaurant.getCollaborators() == null;
 
         return Collaborator.builder()
                 .name(AsciiUtils.cleanString(request.getName()))
@@ -63,7 +63,7 @@ public class Collaborator extends BaseEntity {
 
     public static Collaborator fromCreateRequest(CreateCollaboratorRequest request, Restaurant restaurant, JobTitle jobTitle) {
 
-        var isOwner = restaurant.getCollaborators() == null || (request.getIsOwner() != null ? request.getIsOwner() : Boolean.FALSE);
+        var isOwner = restaurant.getCollaborators() == null;
 
         return Collaborator.builder()
                 .name(AsciiUtils.cleanString(request.getName()))

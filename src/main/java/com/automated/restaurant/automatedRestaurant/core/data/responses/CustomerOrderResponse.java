@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,10 @@ import java.util.UUID;
 public class CustomerOrderResponse {
 
     private UUID id;
+
+    private LocalDateTime creationDate;
+
+    private LocalDateTime lastModifiedDate;
 
     private CustomerResponse customer;
 
@@ -32,6 +37,8 @@ public class CustomerOrderResponse {
     public static CustomerOrderResponse fromCustomerOrder(CustomerOrder customerOrder) {
         return CustomerOrderResponse.builder()
                 .id(customerOrder.getId())
+                .creationDate(customerOrder.getCreationDate())
+                .lastModifiedDate(customerOrder.getLastModifiedDate())
                 .customer(CustomerResponse.fromCustomer(customerOrder.getCustomer()))
                 .restaurantTable(RestaurantTableResponse.fromRestaurantTable(customerOrder.getBill().getRestaurantTable()))
                 .billId(customerOrder.getBill().getId())

@@ -36,7 +36,6 @@ com/automated/restaurant/automatedRestaurant/core/data/dtos/ProductDto.class
 com/automated/restaurant/automatedRestaurant/presentation/repositories/BIllRepository.class
 com/automated/restaurant/automatedRestaurant/core/data/dtos/RestaurantBillMessageDto.class
 com/automated/restaurant/automatedRestaurant/core/data/requests/UpdateJobTitleRequest.class
-com/automated/restaurant/automatedRestaurant/core/configs/WebSocketConfiguration.class
 com/automated/restaurant/automatedRestaurant/presentation/entities/Collaborator$CollaboratorBuilderImpl.class
 com/automated/restaurant/automatedRestaurant/presentation/exceptions/DuplicatedJobTitleException.class
 com/automated/restaurant/automatedRestaurant/core/validations/AreaCodeValidator.class

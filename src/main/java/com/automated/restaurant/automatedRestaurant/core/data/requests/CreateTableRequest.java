@@ -11,9 +11,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CreateTableRequest {
 
-    @NotNull
     private String identification;
 
-    @NotNull
     private Long capacity;
 }

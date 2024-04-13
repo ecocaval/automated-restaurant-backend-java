@@ -7,6 +7,7 @@ import com.automated.restaurant.automatedRestaurant.presentation.entities.Restau
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantTable;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.TableConflictException;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.TableNotFoundException;
+import com.automated.restaurant.automatedRestaurant.presentation.exceptions.base.BadRequestException;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.ProductRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.RestaurantTableRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.RestaurantTableUseCase;
@@ -50,6 +51,7 @@ public class RestaurantTableUseCaseImpl implements RestaurantTableUseCase {
         List<RestaurantTable> restaurantTables = new ArrayList<>();
 
         for (CreateTableRequest request : requests) {
+            validateCreateTableRequest(request);
             validateDuplicityOnTableIdentificationOnCreation(restaurant.getId(), request.getIdentification());
             restaurantTables.add(
                     this.restaurantTableRepository.saveAndFlush(RestaurantTable.fromCreateRequest(request, restaurant))
@@ -108,6 +110,15 @@ public class RestaurantTableUseCaseImpl implements RestaurantTableUseCase {
     private void validateDuplicityOnTableIdentificationOnUpdate(UUID restaurantId, String identification, UUID tableId) {
         if (this.restaurantTableRepository.existsByRestaurantIdAndIdentificationAndIdNotIn(restaurantId, identification, List.of(tableId))) {
             throw new TableConflictException(identification);
+        }
+    }
+
+    private void validateCreateTableRequest(CreateTableRequest request) {
+        if(request.getIdentification() == null) {
+            throw new BadRequestException("A identifação da mesa precisa ser informada.");
+        }
+        if(request.getCapacity() == null) {
+            throw new BadRequestException("A capacidade da mesa precisa ser informada.");
         }
     }
 }

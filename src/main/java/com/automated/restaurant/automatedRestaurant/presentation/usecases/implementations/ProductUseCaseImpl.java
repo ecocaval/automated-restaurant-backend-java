@@ -1,13 +1,16 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateProductRequest;
+import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateTableRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateProductRequest;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Product;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.ProductConflictException;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.ProductNotFoundException;
+import com.automated.restaurant.automatedRestaurant.presentation.exceptions.base.BadRequestException;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.ProductRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.ProductUseCase;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +28,13 @@ public class ProductUseCaseImpl implements ProductUseCase {
     }
 
     @Override
+    @Transactional
     public List<Product> createAll(Restaurant restaurant, List<CreateProductRequest> requests) {
         List<Product> products = new ArrayList<>();
 
         for (CreateProductRequest request : requests) {
+
+            validateCreateProductRequest(request);
 
             var product = Product.fromCreateRequest(request, restaurant);
 
@@ -43,6 +49,7 @@ public class ProductUseCaseImpl implements ProductUseCase {
     }
 
     @Override
+    @Transactional
     public List<Product> updateAll(List<UpdateProductRequest> requests, Restaurant restaurant) {
 
         Set<Product> updatedProducts = new HashSet<>();
@@ -50,6 +57,10 @@ public class ProductUseCaseImpl implements ProductUseCase {
         for (UpdateProductRequest request : requests) {
 
             for (Product product : restaurant.getProducts()) {
+
+                if(request.getId() == null) {
+                    throw new BadRequestException("O id do produto precisa ser informado.");
+                }
 
                 if (!product.getId().equals(request.getId())) {
                     continue;
@@ -94,6 +105,18 @@ public class ProductUseCaseImpl implements ProductUseCase {
             throw new ProductConflictException(
                     product.getRestaurant().getId(), product.getName(), product.getSku(), product.getServingCapacity()
             );
+        }
+    }
+
+    private void validateCreateProductRequest(CreateProductRequest request) {
+        if(request.getName() == null) {
+            throw new BadRequestException("O nome do produto precisa ser informado.");
+        }
+        if(request.getDescription() == null) {
+            throw new BadRequestException("A descrição do produto precisa ser informada.");
+        }
+        if(request.getPrice() == null) {
+            throw new BadRequestException("O preço do produto precisa ser informado.");
         }
     }
 }
