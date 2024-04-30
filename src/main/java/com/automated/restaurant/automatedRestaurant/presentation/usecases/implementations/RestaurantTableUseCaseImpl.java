@@ -3,6 +3,7 @@ package com.automated.restaurant.automatedRestaurant.presentation.usecases.imple
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateTableRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateTableRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.RestaurantTableResponse;
+import com.automated.restaurant.automatedRestaurant.presentation.clients.SocketIoApiClient;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.RestaurantTable;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.TableConflictException;
@@ -13,7 +14,6 @@ import com.automated.restaurant.automatedRestaurant.presentation.repositories.Re
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.RestaurantTableUseCase;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,7 +28,7 @@ public class RestaurantTableUseCaseImpl implements RestaurantTableUseCase {
     private ProductRepository productRepository;
 
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private SocketIoApiClient socketIoApiClient;
 
     @Override
     public List<RestaurantTable> findAll() {
@@ -82,9 +82,9 @@ public class RestaurantTableUseCaseImpl implements RestaurantTableUseCase {
                     Optional.ofNullable(request.getIsCallingWaiter()).ifPresent(restaurantTable::setCallingWaiter);
 
                     if (request.getStatus() != null || request.getIsCallingWaiter() != null) {
-                        this.messagingTemplate.convertAndSend(
-                                String.format("/topic/restaurant/%s/table", restaurantTable.getRestaurant().getId()),
-                                RestaurantTableResponse.fromRestaurantTable(restaurantTable)
+                        this.socketIoApiClient.publishTableEvent(
+                                RestaurantTableResponse.fromRestaurantTable(restaurantTable),
+                                String.valueOf(restaurantTable.getRestaurant().getId())
                         );
                     }
                 }

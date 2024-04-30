@@ -12,6 +12,7 @@ import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResp
 import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrderResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.RestaurantTableResponse;
 import com.automated.restaurant.automatedRestaurant.core.utils.AsyncUtils;
+import com.automated.restaurant.automatedRestaurant.presentation.clients.SocketIoApiClient;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.*;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.BilltNotFoundException;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.CustomerOrderNotFound;
@@ -20,7 +21,6 @@ import com.automated.restaurant.automatedRestaurant.presentation.repositories.*;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -52,7 +52,7 @@ public class BillUseCaseImpl implements BillUseCase {
     private ProductUseCase productUseCase;
 
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private SocketIoApiClient socketIoApiClient;
 
     @Override
     public Bill findById(UUID billId) {
@@ -91,14 +91,14 @@ public class BillUseCaseImpl implements BillUseCase {
 
             setRestaurantTableAsOccupied(restaurantTable);
 
-            this.messagingTemplate.convertAndSend(
-                    String.format("/topic/restaurant/%s/queue", restaurantTable.getRestaurant().getId()),
-                    new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.LEFT, customer)
+            this.socketIoApiClient.publishCustomerQueueEvent(
+                    new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.LEFT, customer),
+                    String.valueOf(restaurantTable.getRestaurant().getId())
             );
 
-            this.messagingTemplate.convertAndSend(
-                    String.format("/topic/restaurant/%s/bill", restaurantTable.getRestaurant().getId()),
-                    new RestaurantBillMessageDto(RestaurantBillAction.CREATED, BillResponse.fromBill(persistedBill))
+            this.socketIoApiClient.publishBillEvent(
+                    new RestaurantBillMessageDto(RestaurantBillAction.CREATED, BillResponse.fromBill(persistedBill)),
+                    String.valueOf(restaurantTable.getRestaurant().getId())
             );
 
             return persistedBill;
@@ -120,19 +120,14 @@ public class BillUseCaseImpl implements BillUseCase {
 
         var persistedBill = this.bIllRepository.save(bill);
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/%s/queue", restaurantTable.getRestaurant().getId()),
-                new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.LEFT, customer)
+        this.socketIoApiClient.publishCustomerQueueEvent(
+                new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.LEFT, customer),
+                String.valueOf(restaurantTable.getRestaurant().getId())
         );
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/%s/bill", restaurantTable.getRestaurant().getId()),
-                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
-        );
-
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant//bill/%s", persistedBill.getId()),
-                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+        this.socketIoApiClient.publishBillEvent(
+                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill)),
+                String.valueOf(restaurantTable.getRestaurant().getId())
         );
 
         return persistedBill;
@@ -208,22 +203,17 @@ public class BillUseCaseImpl implements BillUseCase {
 
         var persistedBill = this.findById(billId);
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/%s/orders", persistedBill.getRestaurantTable().getRestaurant().getId()),
+        this.socketIoApiClient.publishOrderEvent(
                 new CustomerOrderMessageDto(
                         persistedBill.getRestaurantTable().getIdentification(),
                         CustomerOrderResponse.fromCustomerOrder(customerOrder)
-                )
+                ),
+                String.valueOf(persistedBill.getRestaurantTable().getRestaurant().getId())
         );
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/%s/bill", persistedBill.getRestaurantTable().getRestaurant().getId()),
-                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
-        );
-
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/bill/%s", persistedBill.getId()),
-                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+        this.socketIoApiClient.publishBillEvent(
+                new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill)),
+                String.valueOf(persistedBill.getRestaurantTable().getRestaurant().getId())
         );
 
         return persistedBill;
@@ -329,24 +319,19 @@ public class BillUseCaseImpl implements BillUseCase {
                     .findFirst()
                     .get();
 
-
-            this.messagingTemplate.convertAndSend(
-                    String.format("/topic/restaurant/%s/orders", persistedBill.getRestaurantTable().getRestaurant().getId()),
+            this.socketIoApiClient.publishOrderEvent(
                     new CustomerOrderMessageDto(
                             persistedBill.getRestaurantTable().getIdentification(),
                             CustomerOrderResponse.fromCustomerOrder(customerOrder)
-                    )
+                    ),
+                    String.valueOf(persistedBill.getRestaurantTable().getRestaurant().getId())
             );
 
-            this.messagingTemplate.convertAndSend(
-                    String.format("/topic/restaurant/%s/bill", persistedBill.getRestaurantTable().getRestaurant().getId()),
-                    new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
+            this.socketIoApiClient.publishBillEvent(
+                    new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill)),
+                    String.valueOf(persistedBill.getRestaurantTable().getRestaurant().getId())
             );
 
-            this.messagingTemplate.convertAndSend(
-                    String.format("/topic/restaurant/bill/%s", persistedBill.getId()),
-                    new RestaurantBillMessageDto(RestaurantBillAction.UPDATED, BillResponse.fromBill(persistedBill))
-            );
         });
 
         return persistedBill;
@@ -358,9 +343,9 @@ public class BillUseCaseImpl implements BillUseCase {
 
         this.restaurantTableRepository.save(restaurantTable);
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/%s/table", restaurantTable.getRestaurant().getId()),
-                RestaurantTableResponse.fromRestaurantTable(restaurantTable)
+        this.socketIoApiClient.publishTableEvent(
+                RestaurantTableResponse.fromRestaurantTable(restaurantTable),
+                String.valueOf(restaurantTable.getRestaurant().getId())
         );
     }
 }

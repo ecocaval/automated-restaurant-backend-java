@@ -4,13 +4,13 @@ import com.automated.restaurant.automatedRestaurant.core.data.dtos.CustomerResta
 import com.automated.restaurant.automatedRestaurant.core.data.enums.RestaurantQueueAction;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateCustomerRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerRequest;
+import com.automated.restaurant.automatedRestaurant.presentation.clients.SocketIoApiClient;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Customer;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.exceptions.CustomerNotFoundException;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.CustomerRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.CustomerUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private SocketIoApiClient socketIoApiClient;
 
     @Override
     public Customer findById(UUID id) {
@@ -42,9 +42,9 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
 
             var customer = this.customerRepository.save(Customer.fromCreateRequest(request, restaurant));
 
-            this.messagingTemplate.convertAndSend(
-                    String.format("/topic/restaurant/%s/queue", restaurant.getId()),
-                    new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.ENTERED, customer)
+            this.socketIoApiClient.publishCustomerQueueEvent(
+                    new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.ENTERED, customer),
+                    String.valueOf(restaurant.getId())
             );
 
             return customer;
@@ -63,11 +63,10 @@ public class CustomerUseCaseImpl implements CustomerUseCase {
 
         this.customerRepository.save(customer);
 
-        this.messagingTemplate.convertAndSend(
-                String.format("/topic/restaurant/%s/queue", restaurant.getId()),
-                new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.ENTERED, customer)
+        this.socketIoApiClient.publishCustomerQueueEvent(
+                new CustomerRestaurantQueueMessageDto(RestaurantQueueAction.ENTERED, customer),
+                String.valueOf(restaurant.getId())
         );
-
         return customer;
     }
 
