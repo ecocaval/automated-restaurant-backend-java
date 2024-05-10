@@ -17,8 +17,14 @@ spring:
     hibernate:
       ddl-auto: none
 
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:secret-key}
+
 socket-io-api:
-  url: https://automated-restaurant-backend-test.onrender.com/
+  url: http://localhost:9001
+#  url: https://automated-restaurant-backend-test.onrender.com/
 
 feign:
   okhttp:

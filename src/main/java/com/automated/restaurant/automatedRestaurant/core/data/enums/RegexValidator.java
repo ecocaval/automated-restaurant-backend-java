@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 @Getter
 public enum RegexValidator {
 
+    EMAIL_REGEX("^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-zA-Z]{2,})$"),
     CPF_REGEX("^[0-9]{3}\\.?[0-9]{3}\\.?[0-9]{3}\\-?[0-9]{2}$"),
     CNPJ_REGEX("^(\\d{2})\\.?(\\d{3})\\.?(\\d{3})/?\\d{4}-?(\\d{2})$")
     ;

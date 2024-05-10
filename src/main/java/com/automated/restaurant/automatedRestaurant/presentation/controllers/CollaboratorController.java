@@ -2,6 +2,7 @@ package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 
 import com.automated.restaurant.automatedRestaurant.core.data.requests.*;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.*;
+import com.automated.restaurant.automatedRestaurant.core.infra.security.JwtUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +18,28 @@ import java.util.UUID;
 @RequestMapping("/v1/collaborator")
 public class CollaboratorController {
 
-    @Autowired
-    private RestaurantUseCase restaurantUseCase;
+    private final RestaurantUseCase restaurantUseCase;
+
+    private final CollaboratorUseCase collaboratorUseCase;
+
+    private final AuthenticationUseCase authenticationUseCase;
 
     @Autowired
-    private CollaboratorUseCase collaboratorUseCase;
+    public CollaboratorController(
+            RestaurantUseCase restaurantUseCase,
+            CollaboratorUseCase collaboratorUseCase,
+            AuthenticationUseCase authenticationUseCase) {
+        this.restaurantUseCase = restaurantUseCase;
+        this.collaboratorUseCase = collaboratorUseCase;
+        this.authenticationUseCase = authenticationUseCase;
+    }
 
     @GetMapping("/{collaboratorId}")
     public ResponseEntity<CollaboratorResponse> findById(
             @PathVariable("collaboratorId") UUID collaboratorId
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(collaboratorId.toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 CollaboratorResponse.fromCollaborator(this.collaboratorUseCase.findById(collaboratorId))
         );
@@ -37,6 +50,8 @@ public class CollaboratorController {
             @PathVariable("collaboratorId") UUID collaboratorId,
             @RequestBody @Valid UpdateCollaboratorRequest request
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(collaboratorId.toString());
+
         var collaborator = this.collaboratorUseCase.findById(collaboratorId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -48,6 +63,8 @@ public class CollaboratorController {
     public ResponseEntity<List<CollaboratorResponse>> findAllCollaboratorByRestaurantId(
             @PathVariable("restaurantId") UUID restaurantId
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 this.restaurantUseCase.findById(restaurantId).getCollaborators()
                         .stream()
@@ -56,11 +73,23 @@ public class CollaboratorController {
         );
     }
 
+    @PostMapping("/auth")
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
+        return ResponseEntity.ok().body(this.authenticationUseCase.authenticate(request));
+    }
+
+    @PostMapping("/auth/refresh-token")
+    public ResponseEntity<AuthenticationResponse> authenticateByRefreshToken(@RequestBody @Valid RefreshTokenAuthenticationRequest request) {
+        return ResponseEntity.ok().body(this.authenticationUseCase.authenticateWithRefreshToken(request));
+    }
+
     @PostMapping("/restaurant/{restaurantId}")
     public ResponseEntity<CollaboratorResponse> createCollaborator(
             @RequestBody @Valid CreateCollaboratorRequest request,
             @PathVariable("restaurantId") UUID restaurantId
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -68,6 +97,7 @@ public class CollaboratorController {
         );
     }
 
+    // FIXME: SHOULD BE AUTHENTICATED
     @DeleteMapping("/{collaboratorIds}")
     public ResponseEntity<?> deleteAll(
             @PathVariable("collaboratorIds") List<UUID> collaboratorIds

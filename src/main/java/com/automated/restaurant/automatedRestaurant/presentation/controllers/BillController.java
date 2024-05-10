@@ -5,6 +5,7 @@ import com.automated.restaurant.automatedRestaurant.core.data.requests.PlaceCust
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerOrdersRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.BillResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerOrderResponse;
+import com.automated.restaurant.automatedRestaurant.core.infra.security.JwtUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Bill;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public class BillController {
     private ResponseEntity<List<BillResponse>> findAllActiveBills(
             @PathVariable("restaurantId") UUID restaurantId
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         List<Bill> bills = this.billUseCase.findAllActiveBillsByRestaurantId(restaurantId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -53,9 +56,11 @@ public class BillController {
             @PathVariable("customerId") UUID customerId,
             @PathVariable("tableId") UUID tableId
     ) {
-        var customer = this.customerUseCase.findById(customerId);
-
         var restaurantTable = this.restaurantTableUseCase.findById(tableId);
+
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantTable.getRestaurant().getId().toString());
+
+        var customer = this.customerUseCase.findById(customerId);
 
         var optionalExistingBillForTable = this.billUseCase.findByRestaurantTableAndActiveTrue(restaurantTable);
 
@@ -70,8 +75,12 @@ public class BillController {
     private ResponseEntity<BillResponse> findById(
             @PathVariable("billId") UUID billId
     ) {
+        var bill = this.billUseCase.findById(billId);
+
+        JwtUtils.validateAdminOrRestaurantCollaborator(bill.getRestaurantTable().getRestaurant().getId().toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
-                BillResponse.fromBill(this.billUseCase.findById(billId))
+                BillResponse.fromBill(bill)
         );
     }
 
@@ -80,6 +89,8 @@ public class BillController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestParam(value = "customerOrderStatus", required = false) CustomerOrderStatus customerOrderStatus
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -95,6 +106,10 @@ public class BillController {
             @PathVariable("billId") UUID billId,
             @RequestBody PlaceCustomerOrdersRequest request
     ) {
+        var bill = this.billUseCase.findById(billId);
+
+        JwtUtils.validateAdminOrRestaurantCollaborator(bill.getRestaurantTable().getRestaurant().getId().toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
             BillResponse.fromBill(this.billUseCase.placeOrders(request, billId))
         );
@@ -105,6 +120,10 @@ public class BillController {
             @PathVariable("billId") UUID billId,
             @RequestBody UpdateCustomerOrdersRequest request
     ) {
+        var bill = this.billUseCase.findById(billId);
+
+        JwtUtils.validateAdminOrRestaurantCollaborator(bill.getRestaurantTable().getRestaurant().getId().toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 BillResponse.fromBill(this.billUseCase.updateOrders(request, billId))
         );

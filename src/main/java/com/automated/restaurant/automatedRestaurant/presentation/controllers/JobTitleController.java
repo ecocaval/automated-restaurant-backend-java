@@ -4,6 +4,7 @@ import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateJob
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateJobTitleRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.JobTitleResponse;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.RestaurantResponse;
+import com.automated.restaurant.automatedRestaurant.core.infra.security.JwtUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.JobTitleUseCase;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.RestaurantUseCase;
@@ -30,6 +31,10 @@ public class JobTitleController {
     public ResponseEntity<JobTitleResponse> findById(
             @PathVariable("jobTitleId") UUID jobTitleId
     ) {
+        var jobTitle = this.jobTitleUseCase.findById(jobTitleId);
+
+        JwtUtils.validateAdminOrRestaurantCollaborator(jobTitle.getRestaurant().getId().toString());
+
         return ResponseEntity.ok(
                 JobTitleResponse.fromJobTitle(this.jobTitleUseCase.findById(jobTitleId))
         );
@@ -40,6 +45,8 @@ public class JobTitleController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody @Valid List<CreateJobTitleRequest> requests
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 RestaurantResponse.fromRestaurant(this.restaurantUseCase.findById(restaurantId)).getJobTitles()
         );
@@ -50,6 +57,8 @@ public class JobTitleController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody @Valid List<CreateJobTitleRequest> requests
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -65,6 +74,8 @@ public class JobTitleController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody @Valid List<UpdateJobTitleRequest> requests
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -75,6 +86,7 @@ public class JobTitleController {
         );
     }
 
+    // FIXME: SHOULD BE AUTHENTICATED
     @DeleteMapping("/{jobTitleIds}")
     public ResponseEntity<?> deleteAll(
             @PathVariable("{jobTitleIds}") List<UUID> jobTitleIds

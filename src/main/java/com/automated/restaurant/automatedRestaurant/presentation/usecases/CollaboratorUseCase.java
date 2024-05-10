@@ -12,6 +12,12 @@ public interface CollaboratorUseCase {
 
     Collaborator findById(UUID collaboratorId);
 
+    Collaborator findByEmail(String email);
+
+    Collaborator findByCpf(String cpf);
+
+    Collaborator findByLogin(String login);
+
     Collaborator create(CreateCollaboratorRequest request, Restaurant restaurant);
 
     Collaborator update(UpdateCollaboratorRequest request, Collaborator collaborator);

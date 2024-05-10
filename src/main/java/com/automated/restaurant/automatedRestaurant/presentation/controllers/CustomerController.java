@@ -3,6 +3,7 @@ package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateCustomerRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCustomerRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.CustomerResponse;
+import com.automated.restaurant.automatedRestaurant.core.infra.security.JwtUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.BillUseCase;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.CustomerUseCase;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.RestaurantUseCase;
@@ -36,6 +37,10 @@ public class CustomerController {
     private ResponseEntity<CustomerResponse> findById(
             @PathVariable("customerId") UUID customerId
     ) {
+        var customer = this.customerUseCase.findById(customerId);
+
+        JwtUtils.validateAdminOrRestaurantCollaborator(customer.getId().toString());
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 CustomerResponse.fromCustomer(this.customerUseCase.findById(customerId))
         );
@@ -45,6 +50,8 @@ public class CustomerController {
     private ResponseEntity<List<CustomerResponse>> findCustomersByRestaurantId(
             @PathVariable("restaurantId") UUID restaurantId
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         var restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -69,6 +76,8 @@ public class CustomerController {
             @PathVariable("customerId") UUID customerId,
             @RequestBody @Valid UpdateCustomerRequest request
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(customerId.toString());
+
         var customer = this.customerUseCase.findById(customerId);
 
         return ResponseEntity.status(HttpStatus.OK).body(

@@ -6,12 +6,17 @@ import com.automated.restaurant.automatedRestaurant.presentation.exceptions.base
 import java.util.Map;
 import java.util.UUID;
 
-public class CollaboratorNotFound extends NotFoundException {
+public class CollaboratorNotFoundException extends NotFoundException {
 
-    public CollaboratorNotFound(UUID collaboratorId) {
+    public CollaboratorNotFoundException(UUID collaboratorId) {
         super(
                 ErrorMessages.ERROR_COLLABORATOR_NOT_FOUND_BY_ID.getMessage(),
                 Map.of("collaboratorId", collaboratorId)
         );
+    }
+
+
+    public CollaboratorNotFoundException(String message) {
+        super(message);
     }
 }

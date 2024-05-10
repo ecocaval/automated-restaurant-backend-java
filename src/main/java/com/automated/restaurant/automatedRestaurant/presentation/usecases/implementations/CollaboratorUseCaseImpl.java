@@ -1,11 +1,14 @@
 package com.automated.restaurant.automatedRestaurant.presentation.usecases.implementations;
 
+import com.automated.restaurant.automatedRestaurant.core.data.enums.LoginIdentification;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.CreateCollaboratorRequest;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.UpdateCollaboratorRequest;
+import com.automated.restaurant.automatedRestaurant.core.messages.ErrorMessages;
+import com.automated.restaurant.automatedRestaurant.core.utils.AsciiUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Collaborator;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.JobTitle;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
-import com.automated.restaurant.automatedRestaurant.presentation.exceptions.CollaboratorNotFound;
+import com.automated.restaurant.automatedRestaurant.presentation.exceptions.CollaboratorNotFoundException;
 import com.automated.restaurant.automatedRestaurant.presentation.repositories.CollaboratorRepository;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.CollaboratorUseCase;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.JobTitleUseCase;
@@ -14,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,7 +36,27 @@ public class CollaboratorUseCaseImpl implements CollaboratorUseCase {
     @Override
     public Collaborator findById(UUID collaboratorId) {
         return collaboratorRepository.findById(collaboratorId)
-                .orElseThrow(() -> new CollaboratorNotFound(collaboratorId));
+                .orElseThrow(() -> new CollaboratorNotFoundException(collaboratorId));
+    }
+
+    @Override
+    public Collaborator findByEmail(String email) {
+        return this.collaboratorRepository.findByEmail(email)
+                .orElseThrow(() -> new CollaboratorNotFoundException(ErrorMessages.ERROR_COLLABORATOR_NOT_FOUND_BY_EMAIL.getMessage()));
+    }
+
+    @Override
+    public Collaborator findByCpf(String cpf) {
+        return this.collaboratorRepository.findByCpf(AsciiUtils.cleanDocumentString(cpf))
+                .orElseThrow(() -> new CollaboratorNotFoundException(ErrorMessages.ERROR_COLLABORATOR_NOT_FOUND_BY_CPF.getMessage()));
+    }
+
+    @Override
+    public Collaborator findByLogin(String login) {
+        return switch (Objects.requireNonNull(LoginIdentification.getFromLogin(login))) {
+            case EMAIL -> this.findByEmail(login);
+            case CPF -> this.findByCpf(login);
+        };
     }
 
     @Override

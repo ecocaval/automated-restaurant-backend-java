@@ -2,6 +2,7 @@ package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 
 import com.automated.restaurant.automatedRestaurant.core.data.requests.*;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.*;
+import com.automated.restaurant.automatedRestaurant.core.infra.security.JwtUtils;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,8 @@ public class RestaurantController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody UpdateRestaurantRequest request
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         var restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -98,6 +101,8 @@ public class RestaurantController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody List<CreateTableRequest> requests
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -113,6 +118,8 @@ public class RestaurantController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody List<UpdateTableRequest> requests
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -123,6 +130,7 @@ public class RestaurantController {
         );
     }
 
+    // FIXME: SHOULD BE AUTHENTICATED
     @DeleteMapping("/tables/{tableIds}")
     public ResponseEntity<?> deleteTables(
             @PathVariable("tableIds") List<UUID> tableIds
@@ -155,6 +163,8 @@ public class RestaurantController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody List<CreateProductRequest> requests
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -170,6 +180,8 @@ public class RestaurantController {
             @PathVariable("restaurantId") UUID restaurantId,
             @RequestBody List<UpdateProductRequest> requests
     ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
         Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -180,6 +192,7 @@ public class RestaurantController {
         );
     }
 
+    // FIXME: SHOULD BE AUTHENTICATED
     @DeleteMapping("/products/{productIds}")
     public ResponseEntity<?> deleteProducts(
             @PathVariable("productIds") List<UUID> productIds

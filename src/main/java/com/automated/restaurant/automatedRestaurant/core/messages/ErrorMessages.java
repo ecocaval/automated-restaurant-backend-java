@@ -7,6 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorMessages {
 
+    ERROR_INVALID_TOKEN("Por favor, envie um token válido para acessar este recurso."),
+    ERROR_DURING_TOKEN_GENERATION("Um erro ocorreu ao tentar gerar token."),
+    ERROR_REFRESH_TOKEN_NOT_FOUND_BY_ID("O refreshToken com este id não foi encontrado."),
     ERROR_RESTAURANT_NOT_FOUND_BY_ID("O restaurante com este id não foi encontrado."),
     ERROR_BILL_NOT_FOUND_BY_ID("A conta com este id não foi encontrada."),
     ERROR_COMBINATION_OF_CUSTOMER_AND_PRODUCT_ORDER_NOT_FOUND_BY_ID("O item do pedido com esta combinação de ids não econtrado."),
@@ -16,6 +19,10 @@ public enum ErrorMessages {
     ERROR_INVALID_EMAIL("O email fornecido é invalido."),
     ERROR_CUSTOMER_ORDER_NOT_FOUND_BY_ID("O pedido com este id não foi encontrado."),
     ERROR_COLLABORATOR_NOT_FOUND_BY_ID("O colaborador com este id não foi encontrado."),
+    ERROR_COLLABORATOR_NOT_FOUND_BY_USERNAME("O colaborador com este username não foi encontrada."),
+    ERROR_COLLABORATOR_NOT_FOUND_BY_EMAIL("O colaborador com este e-mail não foi encontrada."),
+    ERROR_COLLABORATOR_NOT_FOUND_BY_CPF("O colaborador com este cpf não foi encontrada."),
+    ERROR_COLLABORATOR_INVALID_LOGIN("Não encontramos uma conta para o login fornecido."),
     ERROR_IMAGE_NOT_FOUND_BY_ID("A imagem com este id não foi encontrada."),
     ERROR_CUSTOMER_NOT_FOUND_BY_ID("O client com este id não foi encontrado."),
     ERROR_ON_IMAGE_STORE("Houve um problema ao tentar salvar a imagem, verifique a extensão e integridade do arquivo e tente novamente."),
