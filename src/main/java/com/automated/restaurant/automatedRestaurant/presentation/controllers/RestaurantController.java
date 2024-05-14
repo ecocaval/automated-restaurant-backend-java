@@ -3,6 +3,7 @@ package com.automated.restaurant.automatedRestaurant.presentation.controllers;
 import com.automated.restaurant.automatedRestaurant.core.data.requests.*;
 import com.automated.restaurant.automatedRestaurant.core.data.responses.*;
 import com.automated.restaurant.automatedRestaurant.core.infra.security.JwtUtils;
+import com.automated.restaurant.automatedRestaurant.presentation.entities.ProductCategory;
 import com.automated.restaurant.automatedRestaurant.presentation.entities.Restaurant;
 import com.automated.restaurant.automatedRestaurant.presentation.usecases.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,5 +201,49 @@ public class RestaurantController {
         this.productUseCase.deleteAll(productIds);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{restaurantId}/product/category")
+    public ResponseEntity<List<ProductCategoryResponse>> findAllProductCategories(
+            @PathVariable("restaurantId") UUID restaurantId
+    ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
+        var restaurant = this.restaurantUseCase.findById(restaurantId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                this.productUseCase.findAllProductCategoriesByRestaurant(restaurant)
+                        .stream()
+                        .map(ProductCategoryResponse::fromProductCategory)
+                        .toList()
+        );
+    }
+
+    @PostMapping("/{restaurantId}/product/category")
+    public ResponseEntity<ProductCategoryResponse> createProductCategory(
+            @PathVariable("restaurantId") UUID restaurantId,
+            @RequestBody @Valid CreateProductCategoryRequest request
+    ) {
+        JwtUtils.validateAdminOrRestaurantCollaborator(restaurantId.toString());
+
+        Restaurant restaurant = this.restaurantUseCase.findById(restaurantId);
+
+        ProductCategory createdProductCategory = this.productUseCase.createProductCategory(
+            restaurant, request
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ProductCategoryResponse.fromProductCategory(createdProductCategory)
+        );
+    }
+
+    // FIXME: SHOULD BE AUTHENTICATED
+    @DeleteMapping("/product/category/{categoriesIds}")
+    public ResponseEntity<?> deleteProductCategories(
+            @PathVariable("categoriesIds") List<UUID> categoriesIds
+    ) {
+        this.productUseCase.deleteAllProductCategories(categoriesIds);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -30,6 +31,8 @@ public class ProductResponse {
 
     private String description;
 
+    private List<ProductCategoryResponse> productCategories;
+
     private Double price;
 
     public static ProductResponse fromProduct(Product product) {
@@ -41,6 +44,12 @@ public class ProductResponse {
                 .servingCapacity(product.getServingCapacity())
                 .sku(product.getSku())
                 .description(product.getDescription())
+                .productCategories(
+                        product.getProductCategories()
+                                .stream()
+                                .map(ProductCategoryResponse::fromProductCategory)
+                                .toList()
+                )
                 .price(product.getPrice())
                 .build();
     }

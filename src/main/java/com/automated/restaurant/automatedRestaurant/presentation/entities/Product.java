@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +44,10 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Double price;
 
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "products")
+    @Builder.Default
+    private List<ProductCategory> productCategories = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
@@ -64,5 +69,12 @@ public class Product extends BaseEntity {
         }
 
         return product;
+    }
+
+    public void addProductCategory(ProductCategory category) {
+        if (!this.productCategories.contains(category)) {
+            this.productCategories.add(category);
+            category.addProduct(this);
+        }
     }
 }

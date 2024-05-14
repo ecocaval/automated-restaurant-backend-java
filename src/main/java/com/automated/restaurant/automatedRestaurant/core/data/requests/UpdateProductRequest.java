@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -19,6 +20,8 @@ public class UpdateProductRequest {
     private String name;
 
     private String description;
+
+    private List<UUID> productCategoriesIds;
 
     private Double price;
 
