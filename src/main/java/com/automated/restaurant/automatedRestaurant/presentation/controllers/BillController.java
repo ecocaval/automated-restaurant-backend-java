@@ -75,12 +75,8 @@ public class BillController {
     private ResponseEntity<BillResponse> findById(
             @PathVariable("billId") UUID billId
     ) {
-        var bill = this.billUseCase.findById(billId);
-
-        JwtUtils.validateAdminOrRestaurantCollaborator(bill.getRestaurantTable().getRestaurant().getId().toString());
-
         return ResponseEntity.status(HttpStatus.OK).body(
-                BillResponse.fromBill(bill)
+                BillResponse.fromBill(this.billUseCase.findById(billId))
         );
     }
 
@@ -106,9 +102,7 @@ public class BillController {
             @PathVariable("billId") UUID billId,
             @RequestBody PlaceCustomerOrdersRequest request
     ) {
-        var bill = this.billUseCase.findById(billId);
-
-        JwtUtils.validateAdminOrRestaurantCollaborator(bill.getRestaurantTable().getRestaurant().getId().toString());
+        this.billUseCase.findById(billId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
             BillResponse.fromBill(this.billUseCase.placeOrders(request, billId))
@@ -120,9 +114,7 @@ public class BillController {
             @PathVariable("billId") UUID billId,
             @RequestBody UpdateCustomerOrdersRequest request
     ) {
-        var bill = this.billUseCase.findById(billId);
-
-        JwtUtils.validateAdminOrRestaurantCollaborator(bill.getRestaurantTable().getRestaurant().getId().toString());
+        this.billUseCase.findById(billId);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 BillResponse.fromBill(this.billUseCase.updateOrders(request, billId))
